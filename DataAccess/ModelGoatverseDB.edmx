@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="GoatverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Cards">
+          <Key>
+            <PropertyRef Name="idCard" />
+          </Key>
+          <Property Name="idCard" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="cardName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="points" Type="int" />
+          <Property Name="cardType" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="cardImage" Type="image" />
+          <Property Name="description" Type="varchar(max)" />
+          <Property Name="effectDescription" Type="varchar(max)" />
+        </EntityType>
+        <EntityType Name="Hand">
+          <Key>
+            <PropertyRef Name="idHand" />
+          </Key>
+          <Property Name="idHand" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idCard" Type="int" />
+          <Property Name="idUser" Type="int" Nullable="false" />
+          <Property Name="quantity" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Matches">
+          <Key>
+            <PropertyRef Name="idMatch" />
+          </Key>
+          <Property Name="idMatch" Type="int" Nullable="false" />
+          <Property Name="startTime" Type="datetime" />
+          <Property Name="endTime" Type="datetime" />
+          <Property Name="idWinner" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'Goatverse.dbo.MatchPlayers' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="MatchPlayers">
+          <Property Name="idMatch" Type="int" />
+          <Property Name="idUser" Type="int" />
+        </EntityType>-->
+        <EntityType Name="PlayerActions">
+          <Key>
+            <PropertyRef Name="idAction" />
+          </Key>
+          <Property Name="idAction" Type="int" Nullable="false" />
+          <Property Name="idUser" Type="int" />
+          <Property Name="actionDescription" Type="varchar" MaxLength="50" />
+          <Property Name="actionTime" Type="datetime" />
+        </EntityType>
+        <EntityType Name="Profile">
+          <Key>
+            <PropertyRef Name="idProfile" />
+          </Key>
+          <Property Name="idProfile" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="profileLevel" Type="int" />
+          <Property Name="totalPoints" Type="int" />
+          <Property Name="matchesWon" Type="int" />
+          <Property Name="idUser" Type="int" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="idUser" />
+          </Key>
+          <Property Name="idUser" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="username" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="password" Type="varchar" MaxLength="150" Nullable="false" />
+          <Property Name="verified" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <Association Name="FK_Hand_Cards">
+          <End Role="Cards" Type="Self.Cards" Multiplicity="0..1" />
+          <End Role="Hand" Type="Self.Hand" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cards">
+              <PropertyRef Name="idCard" />
+            </Principal>
+            <Dependent Role="Hand">
+              <PropertyRef Name="idCard" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Hand_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Hand" Type="Self.Hand" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Hand">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="idWinner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <!--Errors Found During Generation:
+error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationship, but cannot be found.
+        <Association Name="FK_MatchPlayers_Matches" />-->
+        <!--Errors Found During Generation:
+error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationship, but cannot be found.
+        <Association Name="FK_MatchPlayers_Users" />-->
+        <Association Name="FK_PlayerActions_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="PlayerActions" Type="Self.PlayerActions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="PlayerActions">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Profile">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Profile" Type="Self.Profile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Profile">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GoatverseModelStoreContainer">
+          <EntitySet Name="Cards" EntityType="Self.Cards" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Hand" EntityType="Self.Hand" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlayerActions" EntityType="Self.PlayerActions" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Profile" EntityType="Self.Profile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Hand_Cards" Association="Self.FK_Hand_Cards">
+            <End Role="Cards" EntitySet="Cards" />
+            <End Role="Hand" EntitySet="Hand" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Hand_Users" Association="Self.FK_Hand_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Hand" EntitySet="Hand" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Users" Association="Self.FK_Matches_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerActions_Users" Association="Self.FK_PlayerActions_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="PlayerActions" EntitySet="PlayerActions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Profile" Association="Self.FK_Users_Profile">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Profile" EntitySet="Profile" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="GoatverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Cards">
+          <Key>
+            <PropertyRef Name="idCard" />
+          </Key>
+          <Property Name="idCard" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cardName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="points" Type="Int32" />
+          <Property Name="cardType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="cardImage" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="effectDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Hand" Relationship="Self.FK_Hand_Cards" FromRole="Cards" ToRole="Hand" />
+        </EntityType>
+        <EntityType Name="Hand">
+          <Key>
+            <PropertyRef Name="idHand" />
+          </Key>
+          <Property Name="idHand" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idCard" Type="Int32" />
+          <Property Name="idUser" Type="Int32" Nullable="false" />
+          <Property Name="quantity" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Cards" Relationship="Self.FK_Hand_Cards" FromRole="Hand" ToRole="Cards" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Hand_Users" FromRole="Hand" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Matches">
+          <Key>
+            <PropertyRef Name="idMatch" />
+          </Key>
+          <Property Name="idMatch" Type="Int32" Nullable="false" />
+          <Property Name="startTime" Type="DateTime" Precision="3" />
+          <Property Name="endTime" Type="DateTime" Precision="3" />
+          <Property Name="idWinner" Type="Int32" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Matches_Users" FromRole="Matches" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="PlayerActions">
+          <Key>
+            <PropertyRef Name="idAction" />
+          </Key>
+          <Property Name="idAction" Type="Int32" Nullable="false" />
+          <Property Name="idUser" Type="Int32" />
+          <Property Name="actionDescription" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="actionTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_PlayerActions_Users" FromRole="PlayerActions" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Profile">
+          <Key>
+            <PropertyRef Name="idProfile" />
+          </Key>
+          <Property Name="idProfile" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="profileLevel" Type="Int32" />
+          <Property Name="totalPoints" Type="Int32" />
+          <Property Name="matchesWon" Type="Int32" />
+          <Property Name="idUser" Type="Int32" />
+          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Profile" FromRole="Profile" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="idUser" />
+          </Key>
+          <Property Name="idUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="password" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="verified" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Hand" Relationship="Self.FK_Hand_Users" FromRole="Users" ToRole="Hand" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Users" FromRole="Users" ToRole="Matches" />
+          <NavigationProperty Name="PlayerActions" Relationship="Self.FK_PlayerActions_Users" FromRole="Users" ToRole="PlayerActions" />
+          <NavigationProperty Name="Profile" Relationship="Self.FK_Users_Profile" FromRole="Users" ToRole="Profile" />
+        </EntityType>
+        <Association Name="FK_Hand_Cards">
+          <End Role="Cards" Type="Self.Cards" Multiplicity="0..1" />
+          <End Role="Hand" Type="Self.Hand" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cards">
+              <PropertyRef Name="idCard" />
+            </Principal>
+            <Dependent Role="Hand">
+              <PropertyRef Name="idCard" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Hand_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Hand" Type="Self.Hand" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Hand">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="idWinner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerActions_Users">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="PlayerActions" Type="Self.PlayerActions" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="PlayerActions">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Profile">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Profile" Type="Self.Profile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Profile">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="GoatverseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Cards" EntityType="Self.Cards" />
+          <EntitySet Name="Hand" EntityType="Self.Hand" />
+          <EntitySet Name="Matches" EntityType="Self.Matches" />
+          <EntitySet Name="PlayerActions" EntityType="Self.PlayerActions" />
+          <EntitySet Name="Profile" EntityType="Self.Profile" />
+          <EntitySet Name="Users" EntityType="Self.Users" />
+          <AssociationSet Name="FK_Hand_Cards" Association="Self.FK_Hand_Cards">
+            <End Role="Cards" EntitySet="Cards" />
+            <End Role="Hand" EntitySet="Hand" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Hand_Users" Association="Self.FK_Hand_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Hand" EntitySet="Hand" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Users" Association="Self.FK_Matches_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerActions_Users" Association="Self.FK_PlayerActions_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="PlayerActions" EntitySet="PlayerActions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Profile" Association="Self.FK_Users_Profile">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Profile" EntitySet="Profile" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="GoatverseModelStoreContainer" CdmEntityContainer="GoatverseEntities">
+          <EntitySetMapping Name="Cards">
+            <EntityTypeMapping TypeName="GoatverseModel.Cards">
+              <MappingFragment StoreEntitySet="Cards">
+                <ScalarProperty Name="idCard" ColumnName="idCard" />
+                <ScalarProperty Name="cardName" ColumnName="cardName" />
+                <ScalarProperty Name="points" ColumnName="points" />
+                <ScalarProperty Name="cardType" ColumnName="cardType" />
+                <ScalarProperty Name="cardImage" ColumnName="cardImage" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="effectDescription" ColumnName="effectDescription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Hand">
+            <EntityTypeMapping TypeName="GoatverseModel.Hand">
+              <MappingFragment StoreEntitySet="Hand">
+                <ScalarProperty Name="idHand" ColumnName="idHand" />
+                <ScalarProperty Name="idCard" ColumnName="idCard" />
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Matches">
+            <EntityTypeMapping TypeName="GoatverseModel.Matches">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="idMatch" ColumnName="idMatch" />
+                <ScalarProperty Name="startTime" ColumnName="startTime" />
+                <ScalarProperty Name="endTime" ColumnName="endTime" />
+                <ScalarProperty Name="idWinner" ColumnName="idWinner" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PlayerActions">
+            <EntityTypeMapping TypeName="GoatverseModel.PlayerActions">
+              <MappingFragment StoreEntitySet="PlayerActions">
+                <ScalarProperty Name="idAction" ColumnName="idAction" />
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
+                <ScalarProperty Name="actionDescription" ColumnName="actionDescription" />
+                <ScalarProperty Name="actionTime" ColumnName="actionTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Profile">
+            <EntityTypeMapping TypeName="GoatverseModel.Profile">
+              <MappingFragment StoreEntitySet="Profile">
+                <ScalarProperty Name="idProfile" ColumnName="idProfile" />
+                <ScalarProperty Name="profileLevel" ColumnName="profileLevel" />
+                <ScalarProperty Name="totalPoints" ColumnName="totalPoints" />
+                <ScalarProperty Name="matchesWon" ColumnName="matchesWon" />
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="GoatverseModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="verified" ColumnName="verified" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

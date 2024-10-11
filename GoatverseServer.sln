@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoatverseServer", "GoatverseServer\GoatverseServer.csproj", "{13CFAE29-BD77-4854-B700-1808EF54EDF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{FF753F7A-68F3-42D2-8F66-675B933C0C6A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13CFAE29-BD77-4854-B700-1808EF54EDF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13CFAE29-BD77-4854-B700-1808EF54EDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13CFAE29-BD77-4854-B700-1808EF54EDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13CFAE29-BD77-4854-B700-1808EF54EDF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF753F7A-68F3-42D2-8F66-675B933C0C6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF753F7A-68F3-42D2-8F66-675B933C0C6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF753F7A-68F3-42D2-8F66-675B933C0C6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF753F7A-68F3-42D2-8F66-675B933C0C6A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8836F151-F10B-4B46-BEAC-23FC52E52F82}
+	EndGlobalSection
+EndGlobal
