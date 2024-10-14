@@ -12,6 +12,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool tryLogin(string username, string password);
+
+        [OperationContract]
+        bool trySignIn(string username, string password, string email);
     }
 
     [ServiceContract]
