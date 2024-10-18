@@ -12,30 +12,30 @@ namespace GoatverseService {
     public interface ILobbyManager {
 
         [OperationContract(IsOneWay = true)]
-        void sendMessageToLobby(User user);
+        void ServiceSendMessageToLobby(MessageData messageData);
 
         [OperationContract]
-        bool connectToLobby(string username, string lobbyCode);
+        bool ServiceConnectToLobby(string username, string lobbyCode);
 
         [OperationContract]
-        bool disconnectFromLobby(string username, string lobbyCode);
+        bool ServiceDisconnectFromLobby(string username, string lobbyCode);
     }
 
     [ServiceContract]
     public interface ILobbyServiceCallback {
 
         [OperationContract(IsOneWay = true)]
-        void GetMessage(User user);
+        void ServiceGetMessage(MessageData messageData);
 
         [OperationContract]
-        bool SuccessfulJoin();
+        bool ServiceSuccessfulJoin();
 
         [OperationContract]
-        bool SucessfulLeave();
+        bool ServiceSucessfulLeave();
     }
 
     [DataContract]
-    public class User {
+    public class MessageData {
 
         private String username;
         private String idUser;

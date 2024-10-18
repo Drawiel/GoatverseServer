@@ -5,6 +5,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,34 +13,35 @@ namespace GoatverseService
 {
     public partial class ServiceImplementation : IUsersManager {
 
-        public bool tryLogin(string username, string passwordAttempt) {
+        public bool ServiceTryLogin(UserData userData) {
 
             using (var database = new GoatverseEntities()) {
                 
-                var user = database.Users.SingleOrDefault(u => u.username == username);
-                if (user != null || BCrypt.Net.BCrypt.Verify(passwordAttempt, user.password)) {
-                    Console.WriteLine("User: " + username + " has loged in");
+                var user = database.Users.SingleOrDefault(u => u.username == userData.Username);
+
+                if (user != null || BCrypt.Net.BCrypt.Verify(userData.Password, user.password)) {
+                    Console.WriteLine("User: " + userData.Username + " has loged in");
                     return true;
                 } else {
-                    Console.WriteLine("Attemp to log in with username: " + username);
+                    Console.WriteLine("Attemp to log in with username: " + userData.Username);
                     return false;
                 }
             }
             
         }
 
-        public bool trySignIn(string newUsername, string newPassword, string newEmail) {
+        public bool ServiceTrySignIn(UserData userData) {
 
             using (var database = new GoatverseEntities()) {
 
-                if(database.Users.Any(u => u.username == newUsername)) {
+                if(database.Users.Any(u => u.username == userData.Username)) {
 
                 }
                 
                 var newSignIn = new Users {
-                    username = newUsername,
-                    password = BCrypt.Net.BCrypt.HashPassword(newPassword),
-                    email = newEmail
+                    username = userData.Username,
+                    password = BCrypt.Net.BCrypt.HashPassword(userData.Password),
+                    email = userData.Email,
                 };
 
 
@@ -61,7 +63,7 @@ namespace GoatverseService
 
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>> lobbiesDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>>();
 
-        public bool connectToLobby(string username, string lobbyCode) {
+        public bool ServiceConnectToLobby(string username, string lobbyCode) {
 
             if (lobbiesDictionary.ContainsKey(lobbyCode)){
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
@@ -84,7 +86,7 @@ namespace GoatverseService
             }
         }
 
-        public bool disconnectFromLobby(string username, string lobbyCode) {
+        public bool ServiceDisconnectFromLobby(string username, string lobbyCode) {
             if (lobbiesDictionary.ContainsKey(lobbyCode)) {
 
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
@@ -106,30 +108,35 @@ namespace GoatverseService
             return false;
         }
 
-        public void sendMessageToLobby(User user) {
+        public void ServiceSendMessageToLobby(MessageData messageData) {
+
+            Console.WriteLine($"Mensaje recibido de {messageData.Username}: {messageData.Message}");
             var callbackChannel = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
 
-            if (lobbiesDictionary.ContainsKey(user.LobbyCode)) {
+            if (lobbiesDictionary.ContainsKey(messageData.LobbyCode)) {
 
-                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[user.LobbyCode];
+                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[messageData.LobbyCode];
 
-                if (!lobby.ContainsKey(user.Username)) {
+                if (!lobby.ContainsKey(messageData.Username)) {
 
-                    bool userAdded = lobby.TryAdd(user.Username, callbackChannel);
+                    bool userAdded = lobby.TryAdd(messageData.Username, callbackChannel);
                     if (userAdded) {
-
+                        Console.WriteLine($"Usuario {messageData.Username} agregado al Lobby.");
                     } else {
 
                     }
                 } else {
 
-                    lobby[user.Username] = callbackChannel;
+                    lobby[messageData.Username] = callbackChannel;
 
                 }
 
-                foreach(var usersInLobby in lobby) {
+                Console.WriteLine($"Usuarios actuales en el lobby {messageData.LobbyCode}:");
+                foreach (var usersInLobby in lobby) {
                     try {
-                        usersInLobby.Value.GetMessage(user);
+                        Console.WriteLine($"Usuario: {usersInLobby.Key}");
+                        Console.WriteLine($"Mensaje enviado a: {usersInLobby.Key}");
+                        usersInLobby.Value.ServiceGetMessage(messageData);
                     } catch (Exception ex) { 
 
                     }

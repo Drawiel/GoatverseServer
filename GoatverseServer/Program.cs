@@ -10,7 +10,7 @@ namespace GoatverseServer {
         static void Main(string[] args) {
             using (ServiceHost host = new ServiceHost(typeof(GoatverseService.ServiceImplementation))) {
                 host.Open();
-                Console.WriteLine("Server running");
+                Console.WriteLine("Servidor iniciado");
                 Console.ReadLine();
             }
         }
