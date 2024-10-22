@@ -1,5 +1,6 @@
 ﻿using BCrypt.Net;
 using DataAccess;
+using GoatverseService.DAO;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -33,10 +34,6 @@ namespace GoatverseService
         public bool ServiceTrySignIn(UserData userData) {
 
             using (var database = new GoatverseEntities()) {
-
-                if(database.Users.Any(u => u.username == userData.Username)) {
-
-                }
                 
                 var newSignIn = new Users {
                     username = userData.Username,
@@ -44,12 +41,51 @@ namespace GoatverseService
                     email = userData.Email,
                 };
 
-
                 database.Users.Add(newSignIn);
                 int result = database.SaveChanges();
 
                 if (result == 1) {
-                    Console.WriteLine("New User added");
+                    UsersDAO usersDAO = new UsersDAO();
+
+                    var newProfile = new Profile {
+                        idUser = usersDAO.GetUserIdByUsername(userData.Username),
+                        profileLevel = 0,
+                        totalPoints = 0,
+                        matchesWon = 0,
+                        imageId = 0,
+                    };
+
+                    database.Profile.Add(newProfile);
+                    int result2 = database.SaveChanges();
+
+                    if(result2 == 1) {
+                        Console.WriteLine("User added");
+                        return true;
+                    } else {
+                        var delete = (from user in database.Users where user.username == userData.Username select user).Single();
+                        database.Users.Remove(delete);
+                        database.SaveChanges();
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        public bool ServiceUserExistsByUsername(string userName) {
+
+            using (var database = new GoatverseEntities()) {
+                return database.Users.Any(u => u.username == userName);
+            }
+        }
+
+        public bool ServiceVerifyPassword(string password, string username) {
+            using (var database = new GoatverseEntities()) {
+                
+                var user = database.Users.SingleOrDefault(u => u.username == username);
+
+                if (user != null || BCrypt.Net.BCrypt.Verify(password, user.password)) {
                     return true;
                 } else {
                     return false;

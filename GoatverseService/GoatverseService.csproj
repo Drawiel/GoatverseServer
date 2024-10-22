@@ -69,6 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAO\ProfileDAO.cs" />
+    <Compile Include="DAO\UsersDAO.cs" />
     <Compile Include="ILobbyManager.cs" />
     <Compile Include="ServiceImplementation.cs" />
     <Compile Include="IUsersManager.cs" />

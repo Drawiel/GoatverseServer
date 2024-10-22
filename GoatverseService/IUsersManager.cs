@@ -16,6 +16,12 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceTrySignIn(UserData userData);
+
+        [OperationContract]
+        bool ServiceUserExistsByUsername(string userName);
+
+        [OperationContract]
+        bool ServiceVerifyPassword(string password, string username);
     }
 
     [ServiceContract]

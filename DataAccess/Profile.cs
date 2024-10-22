@@ -19,6 +19,7 @@ namespace DataAccess
         public Nullable<int> totalPoints { get; set; }
         public Nullable<int> matchesWon { get; set; }
         public Nullable<int> idUser { get; set; }
+        public Nullable<int> imageId { get; set; }
     
         public virtual Users Users { get; set; }
     }

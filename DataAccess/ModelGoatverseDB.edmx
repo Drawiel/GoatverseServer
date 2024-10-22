@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="GoatverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="GoatverseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Cards">
           <Key>
             <PropertyRef Name="idCard" />
@@ -35,12 +35,6 @@
           <Property Name="endTime" Type="datetime" />
           <Property Name="idWinner" Type="int" />
         </EntityType>
-        <!--Errors Found During Generation:
-warning 6013: The table/view 'Goatverse.dbo.MatchPlayers' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
-        <EntityType Name="MatchPlayers">
-          <Property Name="idMatch" Type="int" />
-          <Property Name="idUser" Type="int" />
-        </EntityType>-->
         <EntityType Name="PlayerActions">
           <Key>
             <PropertyRef Name="idAction" />
@@ -59,6 +53,7 @@ warning 6013: The table/view 'Goatverse.dbo.MatchPlayers' does not have a primar
           <Property Name="totalPoints" Type="int" />
           <Property Name="matchesWon" Type="int" />
           <Property Name="idUser" Type="int" />
+          <Property Name="imageId" Type="int" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -106,12 +101,6 @@ warning 6013: The table/view 'Goatverse.dbo.MatchPlayers' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <!--Errors Found During Generation:
-error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationship, but cannot be found.
-        <Association Name="FK_MatchPlayers_Matches" />-->
-        <!--Errors Found During Generation:
-error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationship, but cannot be found.
-        <Association Name="FK_MatchPlayers_Users" />-->
         <Association Name="FK_PlayerActions_Users">
           <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
           <End Role="PlayerActions" Type="Self.PlayerActions" Multiplicity="*" />
@@ -164,8 +153,7 @@ error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationsh
             <End Role="Profile" EntitySet="Profile" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="GoatverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -223,6 +211,7 @@ error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationsh
           <Property Name="matchesWon" Type="Int32" />
           <Property Name="idUser" Type="Int32" />
           <NavigationProperty Name="Users" Relationship="Self.FK_Users_Profile" FromRole="Profile" ToRole="Users" />
+          <Property Name="imageId" Type="Int32" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
@@ -378,6 +367,7 @@ error 6004: The table 'Goatverse.dbo.MatchPlayers' is referenced by a relationsh
           <EntitySetMapping Name="Profile">
             <EntityTypeMapping TypeName="GoatverseModel.Profile">
               <MappingFragment StoreEntitySet="Profile">
+                <ScalarProperty Name="imageId" ColumnName="imageId" />
                 <ScalarProperty Name="idProfile" ColumnName="idProfile" />
                 <ScalarProperty Name="profileLevel" ColumnName="profileLevel" />
                 <ScalarProperty Name="totalPoints" ColumnName="totalPoints" />
