@@ -1,6 +1,6 @@
 ﻿using BCrypt.Net;
 using DataAccess;
-using GoatverseService.DAO;
+using DataAccess.DAOs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,7 +20,12 @@ namespace GoatverseService
                 
                 var user = database.Users.SingleOrDefault(u => u.username == userData.Username);
 
-                if (user != null || BCrypt.Net.BCrypt.Verify(userData.Password, user.password)) {
+                if (user == null) {
+                    return false;
+                }
+                    
+                        
+                 if(BCrypt.Net.BCrypt.Verify(userData.Password, user.password)) {
                     Console.WriteLine("User: " + userData.Username + " has loged in");
                     return true;
                 } else {
@@ -33,6 +38,10 @@ namespace GoatverseService
 
         public bool ServiceTrySignIn(UserData userData) {
 
+            if (ServiceUserExistsByUsername(userData.Username)) {
+                return false;
+            }
+
             using (var database = new GoatverseEntities()) {
                 
                 var newSignIn = new Users {
@@ -41,30 +50,27 @@ namespace GoatverseService
                     email = userData.Email,
                 };
 
-                database.Users.Add(newSignIn);
-                int result = database.SaveChanges();
+                UsersDAO usersDAO = new UsersDAO();
+                ProfileDAO profileDAO = new ProfileDAO();
+                int result = usersDAO.AddUser(newSignIn);
 
                 if (result == 1) {
-                    UsersDAO usersDAO = new UsersDAO();
 
                     var newProfile = new Profile {
-                        idUser = usersDAO.GetUserIdByUsername(userData.Username),
+                        idUser = usersDAO.GetIdUserByUsername(userData.Username),
                         profileLevel = 0,
                         totalPoints = 0,
                         matchesWon = 0,
                         imageId = 0,
                     };
 
-                    database.Profile.Add(newProfile);
-                    int result2 = database.SaveChanges();
+                    int result2 = profileDAO.AddProfile(newProfile);
 
                     if(result2 == 1) {
                         Console.WriteLine("User added");
                         return true;
                     } else {
-                        var delete = (from user in database.Users where user.username == userData.Username select user).Single();
-                        database.Users.Remove(delete);
-                        database.SaveChanges();
+                        usersDAO.DeleteUser(userData.Username);
                         return false;
                     }
                 } else {
@@ -85,7 +91,7 @@ namespace GoatverseService
                 
                 var user = database.Users.SingleOrDefault(u => u.username == username);
 
-                if (user != null || BCrypt.Net.BCrypt.Verify(password, user.password)) {
+                if (user != null && BCrypt.Net.BCrypt.Verify(password, user.password)) {
                     return true;
                 } else {
                     return false;

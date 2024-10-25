@@ -13,9 +13,9 @@
           <Property Name="cardName" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="points" Type="int" />
           <Property Name="cardType" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="cardImage" Type="image" />
           <Property Name="description" Type="varchar(max)" />
           <Property Name="effectDescription" Type="varchar(max)" />
+          <Property Name="imageCardId" Type="int" />
         </EntityType>
         <EntityType Name="Hand">
           <Key>
@@ -165,10 +165,10 @@
           <Property Name="cardName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="points" Type="Int32" />
           <Property Name="cardType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="cardImage" Type="Binary" MaxLength="Max" FixedLength="false" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="effectDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Hand" Relationship="Self.FK_Hand_Cards" FromRole="Cards" ToRole="Hand" />
+          <Property Name="imageCardId" Type="Int32" />
         </EntityType>
         <EntityType Name="Hand">
           <Key>
@@ -324,11 +324,11 @@
           <EntitySetMapping Name="Cards">
             <EntityTypeMapping TypeName="GoatverseModel.Cards">
               <MappingFragment StoreEntitySet="Cards">
+                <ScalarProperty Name="imageCardId" ColumnName="imageCardId" />
                 <ScalarProperty Name="idCard" ColumnName="idCard" />
                 <ScalarProperty Name="cardName" ColumnName="cardName" />
                 <ScalarProperty Name="points" ColumnName="points" />
                 <ScalarProperty Name="cardType" ColumnName="cardType" />
-                <ScalarProperty Name="cardImage" ColumnName="cardImage" />
                 <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="effectDescription" ColumnName="effectDescription" />
               </MappingFragment>

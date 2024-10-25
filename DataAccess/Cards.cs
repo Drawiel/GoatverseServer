@@ -24,9 +24,9 @@ namespace DataAccess
         public string cardName { get; set; }
         public Nullable<int> points { get; set; }
         public string cardType { get; set; }
-        public byte[] cardImage { get; set; }
         public string description { get; set; }
         public string effectDescription { get; set; }
+        public Nullable<int> imageCardId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Hand> Hand { get; set; }
