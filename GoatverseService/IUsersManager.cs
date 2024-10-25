@@ -22,6 +22,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceVerifyPassword(string password, string username);
+
+        [OperationContract]
+        bool ServicePasswordChanged(UserData userData);
     }
 
     [ServiceContract]

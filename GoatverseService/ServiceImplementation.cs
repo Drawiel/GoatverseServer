@@ -14,6 +14,17 @@ namespace GoatverseService
 {
     public partial class ServiceImplementation : IUsersManager {
 
+        public bool ServicePasswordChanged(UserData userData) {
+            UsersDAO userDAO = new UsersDAO();
+            var changeData = new Users() {
+                username = userData.Username,
+                password = userData.Password,
+                email = userData.Email
+            };
+            int result = userDAO.UpdateUserPasswordAndUsernameByEmail(changeData);
+            return result == 1;
+        }
+
         public bool ServiceTryLogin(UserData userData) {
 
             using (var database = new GoatverseEntities()) {
@@ -185,6 +196,29 @@ namespace GoatverseService
                 }
             } else { 
             }
+        }
+        
+
+    }
+
+    public partial class ServiceImplementation : IProfilesManager {
+        public ProfileData ServiceLoadProfileData(string userName) {
+            using(var database = new GoatverseEntities()) {
+                UsersDAO usersDAO = new UsersDAO(); 
+                int idUser = usersDAO.GetIdUserByUsername(userName);
+                 
+
+                ProfileDAO profileDAO = new ProfileDAO();
+                var profileData = new ProfileData() {
+                    ProfileLevel = profileDAO.GetProfileLevelByIdUser(idUser),
+                    MatchesWon = profileDAO.GetMatchesWonByIdUser(idUser),
+                    ImageId = profileDAO.GetImageIdByIdUser(idUser),
+
+                };
+                return profileData;
+            }
+
+
         }
     }
 }

@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ILobbyManager.cs" />
+    <Compile Include="IProfilesManager.cs" />
     <Compile Include="ServiceImplementation.cs" />
     <Compile Include="IUsersManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
