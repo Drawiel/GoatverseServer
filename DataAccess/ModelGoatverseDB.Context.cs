@@ -31,5 +31,7 @@ namespace DataAccess
         public virtual DbSet<PlayerActions> PlayerActions { get; set; }
         public virtual DbSet<Profile> Profile { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<Friends> Friends { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
     }
 }

@@ -128,13 +128,18 @@ namespace GoatverseService
 
                     var callbackChannel = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
                     lobby.TryAdd(username, callbackChannel);
+                    Console.WriteLine($"Usuario {username} se ha unido al lobby {lobbyCode}");
+                    NotifyAllPlayersInLobby(lobbyCode);
                     return true;
                 }
             } else {
+
                 var callback = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = new ConcurrentDictionary<string, ILobbyServiceCallback>();
                 lobby.TryAdd(username, callback);
                 lobbiesDictionary.TryAdd(lobbyCode, lobby);
+                Console.WriteLine($"Usuario {username} se ha unido al lobby {lobbyCode}");
+                NotifyAllPlayersInLobby(lobbyCode);
                 return true;
             }
         }
@@ -152,6 +157,8 @@ namespace GoatverseService
 
                         ConcurrentDictionary<string, ILobbyServiceCallback> removedUser;
                         lobbiesDictionary.TryRemove(lobbyCode, out removedUser);
+                    } else {
+                        NotifyAllPlayersInLobby(lobbyCode);
                     }
 
                     return true;
@@ -197,6 +204,51 @@ namespace GoatverseService
             } else { 
             }
         }
+
+        private void NotifyAllPlayersInLobby(string lobbyCode) {
+            if (lobbiesDictionary.ContainsKey(lobbyCode)) {
+                var lobby = lobbiesDictionary[lobbyCode];
+
+                List<PlayerData> playerList = new List<PlayerData>();
+
+                foreach (var player in lobby.Keys) {
+                    UsersDAO usersDAO = new UsersDAO();
+                    ProfileDAO profileDAO = new ProfileDAO();
+
+                    int idUser = usersDAO.GetIdUserByUsername(player);
+                    int profileLevel = profileDAO.GetProfileLevelByIdUser(idUser);
+
+                    playerList.Add(new PlayerData {
+                        Username = player,
+                        Level = profileLevel
+                    });
+                }
+
+                Task.Run(() => { 
+                    foreach (var playerCallback in lobby.Values) {
+                        try {
+                            playerCallback.ServiceUpdatePlayersInLobby(playerList);
+                        } catch (Exception ex) {
+                            Console.WriteLine($"Error al enviar datos al jugador: {ex.Message}");
+                        }
+                    }
+                });
+            }
+        }
+
+        public int ServiceCountPlayersInLobby(string lobbyCode) {
+            int countUsers = 0;
+            if (lobbiesDictionary.ContainsKey(lobbyCode)) {
+                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
+                foreach (var usersInLobby in lobby) {
+                    countUsers++;
+                }
+            }
+
+            return countUsers;
+        } 
+
+
         
 
     }

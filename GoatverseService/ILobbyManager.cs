@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using static GoatverseService.ServiceImplementation;
 
 namespace GoatverseService {
 
@@ -19,6 +20,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceDisconnectFromLobby(string username, string lobbyCode);
+
+        [OperationContract]
+        int ServiceCountPlayersInLobby(string lobbycode);
     }
 
     [ServiceContract]
@@ -27,11 +31,8 @@ namespace GoatverseService {
         [OperationContract(IsOneWay = true)]
         void ServiceGetMessage(MessageData messageData);
 
-        [OperationContract]
-        bool ServiceSuccessfulJoin();
-
-        [OperationContract]
-        bool ServiceSucessfulLeave();
+        [OperationContract(IsOneWay = true)]
+        void ServiceUpdatePlayersInLobby(List<PlayerData> players);
     }
 
     [DataContract]

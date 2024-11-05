@@ -21,6 +21,9 @@ namespace DataAccess
             this.Matches = new HashSet<Matches>();
             this.PlayerActions = new HashSet<PlayerActions>();
             this.Profile = new HashSet<Profile>();
+            this.Friends = new HashSet<Friends>();
+            this.Friends1 = new HashSet<Friends>();
+            this.Matches1 = new HashSet<Matches>();
         }
     
         public int idUser { get; set; }
@@ -37,5 +40,11 @@ namespace DataAccess
         public virtual ICollection<PlayerActions> PlayerActions { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Profile> Profile { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Friends> Friends { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Friends> Friends1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Matches> Matches1 { get; set; }
     }
 }

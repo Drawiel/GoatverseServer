@@ -52,4 +52,15 @@ namespace GoatverseService {
         [DataMember]
         public String Password { get { return password; } set { password = value; } }
     }
+
+    [DataContract]
+    public class PlayerData {
+        private String username;
+        private int level;
+
+        [DataMember]
+        public string Username { get { return username; } set { username = value; } }
+        [DataMember]
+        public int Level { get { return level; } set { level = value; } }
+    }
 }
