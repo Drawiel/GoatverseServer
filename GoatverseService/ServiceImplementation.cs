@@ -14,6 +14,13 @@ namespace GoatverseService
 {
     public partial class ServiceImplementation : IUsersManager {
 
+        public string ServiceGetEmail(string username) {
+            UsersDAO userDAO = new UsersDAO();
+            int userId = userDAO.GetIdUserByUsername(username);
+            string email = userDAO.GetEmailByIdUser(userId);
+            return email;
+        }
+
         public bool ServicePasswordChanged(UserData userData) {
             UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
