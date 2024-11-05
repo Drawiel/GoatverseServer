@@ -36,6 +36,25 @@ namespace DataAccess.DAOs {
             }
         }
 
+        public int UpdateUsernameByEmail(Users updatedUser) {
+            using (var database = new GoatverseEntities()) {
+                var update = (from user in database.Users where user.email == updatedUser.email select user).Single();
+                update.username = updatedUser.username;
+                int result = database.SaveChanges();
+                return result;
+            }
+        }
+
+        public int UpdatePasswordByEmail(Users updatedUser) {
+            using (var database = new GoatverseEntities()) {
+                var update = (from user in database.Users where user.email == updatedUser.email select user).Single();
+                string newPassword = BCrypt.Net.BCrypt.HashPassword(updatedUser.password);
+                update.password = newPassword;
+                int result = database.SaveChanges();
+                return result;
+            }
+        }
+
         public int GetIdUserByUsername(string username) { 
             using (var database = new GoatverseEntities()) {
                 var userId = database.Users.Where(u => u.username == username).Select(u => u.idUser).FirstOrDefault();

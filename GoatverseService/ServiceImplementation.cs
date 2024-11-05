@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 namespace GoatverseService
 {
     public partial class ServiceImplementation : IUsersManager {
-
+        
+        //
         public string ServiceGetEmail(string username) {
             UsersDAO userDAO = new UsersDAO();
             int userId = userDAO.GetIdUserByUsername(username);
@@ -21,7 +22,28 @@ namespace GoatverseService
             return email;
         }
 
+        //
         public bool ServicePasswordChanged(UserData userData) {
+            UsersDAO userDAO = new UsersDAO();
+            var changeData = new Users() {
+                password = userData.Password,
+                email = userData.Email
+            };
+            int result = userDAO.UpdatePasswordByEmail(changeData);
+            return result == 1;
+        }
+
+        public bool ServiceEmailChanged(UserData userData) {
+            UsersDAO userDAO = new UsersDAO();
+            var changeData = new Users() {
+                username = userData.Username,
+                email = userData.Email
+            };
+            int result = userDAO.UpdateUsernameByEmail(changeData);
+            return result == 1;
+        }
+
+        public bool ServicePasswordAndUsernameChanged(UserData userData) {
             UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
                 username = userData.Username,
@@ -243,6 +265,7 @@ namespace GoatverseService
             }
         }
 
+        //
         public int ServiceCountPlayersInLobby(string lobbyCode) {
             int countUsers = 0;
             if (lobbiesDictionary.ContainsKey(lobbyCode)) {
@@ -261,6 +284,7 @@ namespace GoatverseService
     }
 
     public partial class ServiceImplementation : IProfilesManager {
+        //
         public ProfileData ServiceLoadProfileData(string userName) {
             using(var database = new GoatverseEntities()) {
                 UsersDAO usersDAO = new UsersDAO(); 
