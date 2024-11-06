@@ -27,6 +27,12 @@ namespace GoatverseService {
         bool ServicePasswordChanged(UserData userData);
 
         [OperationContract]
+        bool ServiceUsernameChanged(UserData userData);
+
+        [OperationContract]
+        bool ServicePasswordAndUsernameChanged(UserData userData);
+
+        [OperationContract]
         string ServiceGetEmail(string username);
     }
 

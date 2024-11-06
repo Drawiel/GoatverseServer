@@ -33,7 +33,7 @@ namespace GoatverseService
             return result == 1;
         }
 
-        public bool ServiceEmailChanged(UserData userData) {
+        public bool ServiceUsernameChanged(UserData userData) {
             UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
                 username = userData.Username,
