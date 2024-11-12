@@ -246,10 +246,12 @@ namespace GoatverseService
 
                     int idUser = usersDAO.GetIdUserByUsername(player);
                     int profileLevel = profileDAO.GetProfileLevelByIdUser(idUser);
+                    int profileImageId = profileDAO.GetImageIdByIdUser(idUser);
 
                     playerList.Add(new PlayerData {
                         Username = player,
-                        Level = profileLevel
+                        Level = profileLevel,
+                        ImageId = profileImageId,
                     });
                 }
 
@@ -285,23 +287,27 @@ namespace GoatverseService
 
     public partial class ServiceImplementation : IProfilesManager {
         //
-        public ProfileData ServiceLoadProfileData(string userName) {
-            using(var database = new GoatverseEntities()) {
-                UsersDAO usersDAO = new UsersDAO(); 
-                int idUser = usersDAO.GetIdUserByUsername(userName);
-                 
+        public ProfileData ServiceLoadProfileData(string username) {
+            UsersDAO usersDAO = new UsersDAO(); 
+            int idUser = usersDAO.GetIdUserByUsername(username);
 
-                ProfileDAO profileDAO = new ProfileDAO();
-                var profileData = new ProfileData() {
-                    ProfileLevel = profileDAO.GetProfileLevelByIdUser(idUser),
-                    MatchesWon = profileDAO.GetMatchesWonByIdUser(idUser),
-                    ImageId = profileDAO.GetImageIdByIdUser(idUser),
+            ProfileDAO profileDAO = new ProfileDAO();
+            var profileData = new ProfileData() {
+                ProfileLevel = profileDAO.GetProfileLevelByIdUser(idUser),
+                MatchesWon = profileDAO.GetMatchesWonByIdUser(idUser),
+                ImageId = profileDAO.GetImageIdByIdUser(idUser),
+            };
 
-                };
-                return profileData;
-            }
+            return profileData;
+        }
 
+        public bool ServiceChangeProfileImage(string username, int imageId) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idUser = usersDAO.GetIdUserByUsername(username);
+            ProfileDAO profileDAO = new ProfileDAO();
+            int result = profileDAO.ChangeProfileImageByIdUser(idUser, imageId);
 
+            return result == 1;
         }
     }
 }

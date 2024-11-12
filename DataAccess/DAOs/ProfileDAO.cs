@@ -35,10 +35,10 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public int ChangeProfileImageByIdUser(Profile newProfile) { 
+        public int ChangeProfileImageByIdUser(int idUser, int imageId) { 
             using (var database = new GoatverseEntities()) {
-                var change = (from profile in database.Profile where profile.idUser == newProfile.idUser select profile).Single();
-                change.imageId = newProfile.imageId;
+                var change = (from profile in database.Profile where profile.idUser == idUser select profile).Single();
+                change.imageId = imageId;
                 int result = database.SaveChanges();
                 return result;
             }

@@ -10,7 +10,10 @@ namespace GoatverseService {
     [ServiceContract(CallbackContract = typeof(IProfilesManagerCallback))]
     public interface IProfilesManager {
         [OperationContract]
-        ProfileData ServiceLoadProfileData(string userName);
+        ProfileData ServiceLoadProfileData(string username);
+
+        [OperationContract]
+        bool ServiceChangeProfileImage(string username, int imageId);
 
     }
     [ServiceContract]

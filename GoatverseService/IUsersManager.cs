@@ -66,10 +66,13 @@ namespace GoatverseService {
     public class PlayerData {
         private String username;
         private int level;
+        private int imageId;
 
         [DataMember]
         public string Username { get { return username; } set { username = value; } }
         [DataMember]
         public int Level { get { return level; } set { level = value; } }
+        [DataMember]
+        public int ImageId { get { return imageId; } set { imageId = value; } }
     }
 }

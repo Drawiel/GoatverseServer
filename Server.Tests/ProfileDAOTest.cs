@@ -121,7 +121,7 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = profileDAO.ChangeProfileImageByIdUser(updatedProfile);
+            int result = profileDAO.ChangeProfileImageByIdUser((int)updatedProfile.idUser, (int)updatedProfile.imageId);
 
             // Assert
             Assert.AreEqual(1, result);
