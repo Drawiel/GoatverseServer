@@ -4,14 +4,15 @@ using DataAccess.DAOs;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Numerics;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GoatverseService
-{
+namespace GoatverseService {
     public partial class ServiceImplementation : IUsersManager {
         
         //
@@ -145,31 +146,42 @@ namespace GoatverseService
 
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>> lobbiesDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>>();
 
+        public bool ServiceCreateLobby(string username, string lobbyCode) {
+
+            if (lobbiesDictionary.ContainsKey(lobbyCode)) {
+                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
+                
+                return false;
+                
+            } else {
+
+                var callback = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
+                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = new ConcurrentDictionary<string, ILobbyServiceCallback>();
+                lobbiesDictionary.TryAdd(lobbyCode, lobby);
+                Console.WriteLine($"Usuario {username} ha creado el lobby {lobbyCode}");
+                return true;
+            }
+        }
+
         public bool ServiceConnectToLobby(string username, string lobbyCode) {
 
             if (lobbiesDictionary.ContainsKey(lobbyCode)){
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
 
                 if (lobby.ContainsKey(username)) {
-
                     return false;
-                } else {
 
+                } else {
                     var callbackChannel = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
                     lobby.TryAdd(username, callbackChannel);
                     Console.WriteLine($"Usuario {username} se ha unido al lobby {lobbyCode}");
-                    NotifyAllPlayersInLobby(lobbyCode);
+                    ServiceNotifyPlayersInLobby(lobbyCode);
                     return true;
+
                 }
             } else {
+                return false;
 
-                var callback = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
-                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = new ConcurrentDictionary<string, ILobbyServiceCallback>();
-                lobby.TryAdd(username, callback);
-                lobbiesDictionary.TryAdd(lobbyCode, lobby);
-                Console.WriteLine($"Usuario {username} se ha unido al lobby {lobbyCode}");
-                NotifyAllPlayersInLobby(lobbyCode);
-                return true;
             }
         }
 
@@ -187,7 +199,7 @@ namespace GoatverseService
                         ConcurrentDictionary<string, ILobbyServiceCallback> removedUser;
                         lobbiesDictionary.TryRemove(lobbyCode, out removedUser);
                     } else {
-                        NotifyAllPlayersInLobby(lobbyCode);
+                        ServiceNotifyPlayersInLobby(lobbyCode);
                     }
 
                     return true;
@@ -234,7 +246,7 @@ namespace GoatverseService
             }
         }
 
-        private void NotifyAllPlayersInLobby(string lobbyCode) {
+        private void ServiceNotifyPlayersInLobby(string lobbyCode) {
             if (lobbiesDictionary.ContainsKey(lobbyCode)) {
                 var lobby = lobbiesDictionary[lobbyCode];
 
@@ -308,6 +320,98 @@ namespace GoatverseService
             int result = profileDAO.ChangeProfileImageByIdUser(idUser, imageId);
 
             return result == 1;
+        }
+    }
+
+    public partial class ServiceImplementation : IFriendsManager {
+
+        public bool ServiceAcceptFriendRequest(string username1, string username2) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idSender = usersDAO.GetIdUserByUsername(username1);
+            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+
+            FriendsDAO friendsDAO = new FriendsDAO();
+            int result = friendsDAO.AcceptFriendRequest(idSender, idReceiver);
+
+            return result == 1;
+        }
+
+        public bool ServiceSendFriendRequest(string username1, string username2) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idSender = usersDAO.GetIdUserByUsername(username1);
+            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+
+            FriendsDAO friendsDAO = new FriendsDAO();
+            int result = friendsDAO.AddFriend(idSender, idReceiver);
+            return result == 1;
+        }
+
+        public List<PlayerData> ServiceGetFriends(string username) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idSender = usersDAO.GetIdUserByUsername(username);
+            
+            FriendsDAO friendsDAO = new FriendsDAO();
+            List<int> listIdFriends = friendsDAO.GetFriends(idSender);
+            List<PlayerData> friendsData = new List<PlayerData>();
+            
+            foreach (int idFriend in listIdFriends) {
+                ProfileDAO profileDAO = new ProfileDAO();
+                string usernameFriend = usersDAO.GetUsernameByIdUser(idFriend);
+                int friendLevel = profileDAO.GetProfileLevelByIdUser(idFriend);
+                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idFriend);
+
+                friendsData.Add(new PlayerData {
+                    Username = usernameFriend,
+                    Level = friendLevel,
+                    ImageId = friendProfileImageId,
+                });
+            }
+            
+            return friendsData;
+        }
+
+        public bool ServiceRemoveFriend(string username1, string username2) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idSender = usersDAO.GetIdUserByUsername(username1);
+            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+
+            FriendsDAO friendsDAO = new FriendsDAO();
+            int result = friendsDAO.DeleteFriend(idSender, idReceiver);
+            return result == 1;
+        }
+
+        public bool ServiceIsPendingFriendRequest(string username1, string username2) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idSender = usersDAO.GetIdUserByUsername(username1);
+            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+
+            FriendsDAO friendsDAO = new FriendsDAO();
+            bool result = friendsDAO.IsFriendRequestPending(idSender, idReceiver);
+            return result;
+        }
+
+        public List<PlayerData> ServiceGetPendingFriendRequest(string username) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idReceiver = usersDAO.GetIdUserByUsername(username);
+
+            FriendsDAO friendsDAO = new FriendsDAO();
+            List<int> listIdFriends = friendsDAO.GetPendingFriendRequests(idReceiver);
+            List<PlayerData> friendsData = new List<PlayerData>();
+
+            foreach (int idPendingFriend in listIdFriends) {
+                ProfileDAO profileDAO = new ProfileDAO();
+                string usernameFriend = usersDAO.GetUsernameByIdUser(idPendingFriend);
+                int friendLevel = profileDAO.GetProfileLevelByIdUser(idPendingFriend);
+                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idPendingFriend);
+
+                friendsData.Add(new PlayerData {
+                    Username = usernameFriend,
+                    Level = friendLevel,
+                    ImageId = friendProfileImageId,
+                });
+            }
+
+            return friendsData;
         }
     }
 }

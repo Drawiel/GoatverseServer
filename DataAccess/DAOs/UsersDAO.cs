@@ -68,5 +68,12 @@ namespace DataAccess.DAOs {
                 return email;
             }
         }
+
+        public string GetUsernameByIdUser(int idUser) {
+            using (var database = new GoatverseEntities()) {
+                var username = database.Users.Where(u => u.idUser == idUser).Select(u => u.username).FirstOrDefault();
+                return username;
+            }
+        }
     }
 }

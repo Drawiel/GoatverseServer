@@ -128,5 +128,33 @@ namespace DataAccess.Tests {
             // Assert
             Assert.IsNull(email); 
         }
+
+        [TestMethod]
+        public void TestGetUsernameByIdUserSuccess() {
+            // Arrange
+            var newUser = new Users {
+                username = "UsernameById",
+                password = BCrypt.Net.BCrypt.HashPassword("PasswordForUsername"),
+                email = "getusername@example.com"
+            };
+            usersDAO.AddUser(newUser);
+            int userId = usersDAO.GetIdUserByUsername(newUser.username);
+
+            // Act
+            string username = usersDAO.GetUsernameByIdUser(userId);
+
+            // Assert
+            Assert.AreEqual("UsernameById", username);
+            usersDAO.DeleteUser(newUser.username);
+        }
+
+        [TestMethod]
+        public void TestGetUsernameByIdUserNonExisting() {
+            // Act
+            string username = usersDAO.GetUsernameByIdUser(-1);
+
+            // Assert
+            Assert.IsNull(username);
+        }
     }
 }

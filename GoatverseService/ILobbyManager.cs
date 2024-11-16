@@ -23,6 +23,9 @@ namespace GoatverseService {
 
         [OperationContract]
         int ServiceCountPlayersInLobby(string lobbycode);
+
+        [OperationContract]
+        bool ServiceCreateLobby(string username, string lobbyCode);
     }
 
     [ServiceContract]

@@ -48,9 +48,9 @@ namespace DataAccess.DAOs {
 
         public List<int> GetFriends(int userId) {
             using (var database = new GoatverseEntities()) {
-                var friends = database.Friends.Where(f => (f.idUser1 == userId || f.idUser2 == userId) && f.statusRequest == "Accepted").Select(f => f.idUser1 == userId ? f.idUser2 : f.idUser1).ToList();
+                var idFriends = database.Friends.Where(f => (f.idUser1 == userId || f.idUser2 == userId) && f.statusRequest == "Accepted").Select(f => f.idUser1 == userId ? f.idUser2 : f.idUser1).ToList();
 
-                return friends;
+                return idFriends;
             }
         }
 
@@ -67,6 +67,14 @@ namespace DataAccess.DAOs {
                 var pendingRequest = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2) && f.statusRequest == "Pending").SingleOrDefault();
 
                 return pendingRequest != null;
+            }
+        }
+
+        public List<int> GetPendingFriendRequests(int userId) {
+            using (var database = new GoatverseEntities()) {
+                var idFriends = database.Friends.Where(f => (f.idUser2 == userId) && f.statusRequest == "Pending").Select(f => f.idUser1).ToList();
+
+                return idFriends;
             }
         }
     }
