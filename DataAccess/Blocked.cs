@@ -12,14 +12,13 @@ namespace DataAccess
     using System;
     using System.Collections.Generic;
     
-    public partial class Cards
+    public partial class Blocked
     {
-        public int idCard { get; set; }
-        public string cardName { get; set; }
-        public Nullable<int> points { get; set; }
-        public string cardType { get; set; }
-        public string description { get; set; }
-        public string effectDescription { get; set; }
-        public Nullable<int> imageCardId { get; set; }
+        public int idBlock { get; set; }
+        public Nullable<int> idBlockedUser { get; set; }
+        public Nullable<int> idBlocker { get; set; }
+    
+        public virtual Users Users { get; set; }
+        public virtual Users Users1 { get; set; }
     }
 }

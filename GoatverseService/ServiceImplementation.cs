@@ -431,7 +431,7 @@ namespace GoatverseService {
             var callbackChannel = OperationContext.Current.GetCallbackChannel<IMatchServiceCallback>();
 
             if(match.Players.ContainsKey(username)) {
-                return false; // Player already in match
+                return false; 
             }
 
             match.Players.TryAdd(username, new PlayerSession {

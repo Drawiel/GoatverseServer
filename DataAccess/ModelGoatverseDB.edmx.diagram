@@ -6,20 +6,18 @@
     <edmx:Diagrams>
       <Diagram DiagramId="7201b6fcff96412e866438d49bfe0223" Name="Diagram1" ZoomLevel="86">
         <EntityTypeShape EntityType="GoatverseModel.Cards" Width="1.5" PointX="3" PointY="2.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="GoatverseModel.Hand" Width="1.5" PointX="6.75" PointY="2.625" IsExpanded="true" />
         <EntityTypeShape EntityType="GoatverseModel.Matches" Width="1.5" PointX="10.625" PointY="5.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="GoatverseModel.PlayerActions" Width="1.5" PointX="3" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="GoatverseModel.Profile" Width="1.5" PointX="3" PointY="8.625" IsExpanded="true" />
         <EntityTypeShape EntityType="GoatverseModel.Users" Width="1.5" PointX="6.75" PointY="5.375" IsExpanded="true" />
-        <AssociationConnector Association="GoatverseModel.FK_Hand_Cards" ManuallyRouted="false" />
-        <AssociationConnector Association="GoatverseModel.FK_Hand_Users" ManuallyRouted="false" />
         <AssociationConnector Association="GoatverseModel.FK_Matches_Users" ManuallyRouted="false" />
-        <AssociationConnector Association="GoatverseModel.FK_PlayerActions_Users" ManuallyRouted="false" />
         <AssociationConnector Association="GoatverseModel.FK_Users_Profile" ManuallyRouted="false" />
         <EntityTypeShape EntityType="GoatverseModel.Friends" Width="1.5" PointX="11" PointY="9.375" />
         <AssociationConnector Association="GoatverseModel.FK_Friends_Users1" />
         <AssociationConnector Association="GoatverseModel.FK_Friends_Users2" />
         <AssociationConnector Association="GoatverseModel.MatchPlayers" />
+        <EntityTypeShape EntityType="GoatverseModel.Blocked" Width="1.5" PointX="9" PointY="2.25" />
+        <AssociationConnector Association="GoatverseModel.FK_Blocked_Blocked" />
+        <AssociationConnector Association="GoatverseModel.FK_Blocked_Blocker" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

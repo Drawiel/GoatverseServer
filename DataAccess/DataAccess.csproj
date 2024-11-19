@@ -69,6 +69,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Blocked.cs">
+      <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
+    </Compile>
     <Compile Include="Cards.cs">
       <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
     </Compile>
@@ -79,9 +82,6 @@
     <Compile Include="DAOs\ProfileDAO.cs" />
     <Compile Include="DAOs\UsersDAO.cs" />
     <Compile Include="Friends.cs">
-      <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Hand.cs">
       <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Matches.cs">
@@ -101,9 +101,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ModelGoatverseDB.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerActions.cs">
-      <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
     </Compile>
     <Compile Include="Profile.cs">
       <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
