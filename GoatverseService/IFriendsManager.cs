@@ -24,6 +24,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceIsPendingFriendRequest(string username1, string username2);
+
+        [OperationContract]
+        List<PlayerData> ServiceGetPendingFriendRequest(string username);
     }
 
     [ServiceContract]
