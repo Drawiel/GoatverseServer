@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="7201b6fcff96412e866438d49bfe0223" Name="Diagram1" ZoomLevel="73">
+      <Diagram DiagramId="7201b6fcff96412e866438d49bfe0223" Name="Diagram1" ZoomLevel="86">
         <EntityTypeShape EntityType="GoatverseModel.Cards" Width="1.5" PointX="3" PointY="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="GoatverseModel.Hand" Width="1.5" PointX="6.75" PointY="2.625" IsExpanded="true" />
         <EntityTypeShape EntityType="GoatverseModel.Matches" Width="1.5" PointX="10.625" PointY="5.125" IsExpanded="true" />

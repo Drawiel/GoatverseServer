@@ -75,6 +75,7 @@
     <Compile Include="Class1.cs" />
     <Compile Include="DAOs\CardsDAO.cs" />
     <Compile Include="DAOs\FriendsDAO.cs" />
+    <Compile Include="DAOs\MatchDAO.cs" />
     <Compile Include="DAOs\ProfileDAO.cs" />
     <Compile Include="DAOs\UsersDAO.cs" />
     <Compile Include="Friends.cs">
