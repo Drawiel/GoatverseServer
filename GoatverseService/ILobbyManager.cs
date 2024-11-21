@@ -26,6 +26,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceCreateLobby(string username, string lobbyCode);
+
+        [OperationContract]
+        bool ServiceStartLobbyMatch(string lobbyCode);
     }
 
     [ServiceContract]
@@ -36,7 +39,14 @@ namespace GoatverseService {
 
         [OperationContract(IsOneWay = true)]
         void ServiceUpdatePlayersInLobby(List<PlayerData> players);
+        [OperationContract(IsOneWay = true)]
+        void ServiceStartMatch(List<PlayerData> players);
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceNotifyMatchStart();
+
     }
+}
 
     [DataContract]
     public class MessageData {
@@ -48,11 +58,11 @@ namespace GoatverseService {
 
         [DataMember]
         public String Username { get { return username; } set { username = value; } }
-        [DataMember] 
+        [DataMember]
         public String IdUser { get { return idUser; } set { idUser = value; } }
         [DataMember]
         public String Message { get { return message; } set { message = value; } }
         [DataMember]
         public String LobbyCode { get { return lobbyCode; } set { lobbyCode = value; } }
     }
-}
+

@@ -75,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ICardsManager.cs" />
     <Compile Include="IFriendsManager.cs" />
     <Compile Include="ILobbyManager.cs" />
     <Compile Include="IMatchManager.cs" />

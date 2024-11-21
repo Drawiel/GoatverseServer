@@ -293,13 +293,34 @@ namespace GoatverseService {
             return countUsers;
         }
 
+        public void StartMatch(string lobbyCode) {
+            if(lobbiesDictionary.TryGetValue(lobbyCode, out var lobby)) {
+                Task.Run(() => {
+                    foreach(var playerCallback in lobby.Values) {
+                        try {
+                            playerCallback.ServiceNotifyMatchStart();
+                        }
+                        catch(Exception ex) {
+                            Console.WriteLine($"Error notificando al jugador: {ex.Message}");
+                        }
+                    }
+                });
+            }
+        }
 
+        public bool ServiceStartLobbyMatch(string lobbyCode) {
+            if(lobbiesDictionary.ContainsKey(lobbyCode)) {
+                StartMatch(lobbyCode);
+                return true;
+            }
+            return false;
+        }
 
 
     }
 
     public partial class ServiceImplementation : IProfilesManager {
-        //
+ 
         public ProfileData ServiceLoadProfileData(string username) {
             UsersDAO usersDAO = new UsersDAO();
             int idUser = usersDAO.GetIdUserByUsername(username);
@@ -418,7 +439,7 @@ namespace GoatverseService {
 
     }
 
-    public partial class MatchServiceImplementation : IMatchManager {
+    /*public partial class ServiceImplementation : IMatchManager {
         private static ConcurrentDictionary<string, MatchSession> matchSessions =
             new ConcurrentDictionary<string, MatchSession>();
 
@@ -493,10 +514,10 @@ namespace GoatverseService {
             var random = new Random();
             return new CardData {
                 CardName = $"Card {random.Next(1, 50)}",
-                CardId = random.Next(1, 50)
+                IdCard = random.Next(1, 50)
             };
         }
-    }
+    }*/
 
     public class MatchSession {
         public ConcurrentDictionary<string, PlayerSession> Players { get; } =
@@ -507,6 +528,71 @@ namespace GoatverseService {
         public string Username { get; set; }
         public List<CardData> Cards { get; set; }
         public IMatchServiceCallback Callback { get; set; }
+    }
+
+    public partial class ServiceImplementation : ICardsManager {
+
+        public List<CardData> ServiceGetAllCards() {
+            CardsDAO cardsDAO = new CardsDAO();
+            var cards = cardsDAO.GetAllCards();
+
+            // Convertimos las entidades a un formato más amigable para el cliente
+            var cardDataList = new List<CardData>();
+            foreach(var card in cards) {
+                cardDataList.Add(new CardData {
+                    IdCard = card.idCard,
+                    CardName = card.cardName,
+                    Points = card.points ?? 0,
+                    CardType = card.cardType,
+                    Description = card.description,
+                    EffectDescription = card.effectDescription,
+                    ImageCardId = card.imageCardId ?? 0
+                });
+            }
+
+            return cardDataList;
+        }
+
+        public CardData ServiceGetCardById(int id) {
+            CardsDAO cardsDAO = new CardsDAO();
+            var card = cardsDAO.GetCardById(id);
+
+            if(card != null) {
+                return new CardData {
+                    IdCard = card.idCard,
+                    CardName = card.cardName,
+                    Points = card.points ?? 0,
+                    CardType = card.cardType,
+                    Description = card.description,
+                    EffectDescription = card.effectDescription,
+                    ImageCardId = card.imageCardId ?? 0
+                };
+            }
+
+            return null;
+        }
+
+        public bool ServiceAddCard(CardData cardData) {
+            CardsDAO cardsDAO = new CardsDAO();
+
+            var newCard = new Cards {
+                cardName = cardData.CardName,
+                points = cardData.Points,
+                cardType = cardData.CardType,
+                description = cardData.Description,
+                effectDescription = cardData.EffectDescription,
+                imageCardId = cardData.ImageCardId
+            };
+
+            int result = cardsDAO.AddCard(newCard);
+            return result > 0;
+        }
+
+        public bool ServiceDeleteCard(int id) {
+            CardsDAO cardsDAO = new CardsDAO();
+            int result = cardsDAO.DeleteCard(id);
+            return result > 0;
+        }
     }
 
 }
