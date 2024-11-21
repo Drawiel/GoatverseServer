@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GoatverseService {
     
-    [ServiceContract(CallbackContract = typeof(IUsersManagerCallback))]
+    [ServiceContract]
     public interface IUsersManager {
 
         [OperationContract]
@@ -36,43 +36,30 @@ namespace GoatverseService {
         string ServiceGetEmail(string username);
     }
 
-    [ServiceContract]
-    public interface IUsersManagerCallback {
-        void ServiceLoginUser(string message);
-    }
 
     [DataContract]
     public class UserData {
 
-        private String username;
-        private String idUser;
-        private String message;
-        private String email;
-        private String password;
-
         [DataMember]
-        public String Username { get { return username; } set { username = value; } }
+        public String Username { get; set; }
         [DataMember]
-        public String IdUser { get { return idUser; } set { idUser = value; } }
+        public String IdUser { get; set; }
         [DataMember]
-        public String Message { get { return message; } set { message = value; } }
+        public String Message { get; set; }
         [DataMember]
-        public String Email { get { return email; } set { email = value; } }
+        public String Email { get; set; }
         [DataMember]
-        public String Password { get { return password; } set { password = value; } }
+        public String Password { get; set; }
     }
 
     [DataContract]
     public class PlayerData {
-        private String username;
-        private int level;
-        private int imageId;
 
         [DataMember]
-        public string Username { get { return username; } set { username = value; } }
+        public string Username { get; set; }
         [DataMember]
-        public int Level { get { return level; } set { level = value; } }
+        public int Level { get; set; }
         [DataMember]
-        public int ImageId { get { return imageId; } set { imageId = value; } }
+        public int ImageId { get; set; }
     }
 }

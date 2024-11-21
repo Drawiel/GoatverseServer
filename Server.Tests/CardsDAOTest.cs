@@ -7,7 +7,6 @@ namespace DataAccess.Tests {
     [TestClass]
     public class CardsDAOTests {
 
-        private CardsDAO cardsDAO = new CardsDAO();
 
         [TestMethod]
         public void TestAddCard() {
@@ -22,15 +21,15 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = cardsDAO.AddCard(newCard);
+            int result = CardsDAO.AddCard(newCard);
 
             // Assert
             Assert.AreEqual(1, result);  // Asume que se espera 1 cuando la carta se agrega con éxito
 
             // Cleanup: Eliminar la carta agregada para no dejar datos residuales
-            var cardToDelete = cardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
+            var cardToDelete = CardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
             if(cardToDelete != null) {
-                cardsDAO.DeleteCard(cardToDelete.idCard);
+                CardsDAO.DeleteCard(cardToDelete.idCard);
             }
         }
 
@@ -47,15 +46,15 @@ namespace DataAccess.Tests {
             };
 
             // Agregar la carta antes de intentar eliminarla
-            cardsDAO.AddCard(newCard);
+            CardsDAO.AddCard(newCard);
 
             // Obtener el ID de la carta recién agregada
-            var cardToDelete = cardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
+            var cardToDelete = CardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
 
             // Act
             int result = 0;
             if(cardToDelete != null) {
-                result = cardsDAO.DeleteCard(cardToDelete.idCard);
+                result = CardsDAO.DeleteCard(cardToDelete.idCard);
             }
 
             // Assert
@@ -65,7 +64,7 @@ namespace DataAccess.Tests {
         [TestMethod]
         public void TestGetAllCards() {
             // Act
-            var allCards = cardsDAO.GetAllCards();
+            var allCards = CardsDAO.GetAllCards();
 
             // Assert
             Assert.IsNotNull(allCards);  // Asegurarse de que se obtiene una lista no nula
@@ -85,15 +84,15 @@ namespace DataAccess.Tests {
             };
 
             // Agregar la carta antes de intentar obtenerla
-            cardsDAO.AddCard(newCard);
+            CardsDAO.AddCard(newCard);
 
             // Obtener el ID de la carta recién agregada
-            var cardToFetch = cardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
+            var cardToFetch = CardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
 
             // Act
             Cards fetchedCard = null;
             if(cardToFetch != null) {
-                fetchedCard = cardsDAO.GetCardById(cardToFetch.idCard);
+                fetchedCard = CardsDAO.GetCardById(cardToFetch.idCard);
             }
 
             // Assert

@@ -18,41 +18,37 @@ namespace GoatverseService {
 
         //
         public string ServiceGetEmail(string username) {
-            UsersDAO userDAO = new UsersDAO();
-            int userId = userDAO.GetIdUserByUsername(username);
-            string email = userDAO.GetEmailByIdUser(userId);
+            int userId = UsersDAO.GetIdUserByUsername(username);
+            string email = UsersDAO.GetEmailByIdUser(userId);
             return email;
         }
 
         //
         public bool ServicePasswordChanged(UserData userData) {
-            UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
                 password = userData.Password,
                 email = userData.Email
             };
-            int result = userDAO.UpdatePasswordByEmail(changeData);
+            int result = UsersDAO.UpdatePasswordByEmail(changeData);
             return result == 1;
         }
 
         public bool ServiceUsernameChanged(UserData userData) {
-            UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
                 username = userData.Username,
                 email = userData.Email
             };
-            int result = userDAO.UpdateUsernameByEmail(changeData);
+            int result = UsersDAO.UpdateUsernameByEmail(changeData);
             return result == 1;
         }
 
         public bool ServicePasswordAndUsernameChanged(UserData userData) {
-            UsersDAO userDAO = new UsersDAO();
             var changeData = new Users() {
                 username = userData.Username,
                 password = userData.Password,
                 email = userData.Email
             };
-            int result = userDAO.UpdateUserPasswordAndUsernameByEmail(changeData);
+            int result = UsersDAO.UpdateUserPasswordAndUsernameByEmail(changeData);
             return result == 1;
         }
 
@@ -92,27 +88,25 @@ namespace GoatverseService {
                     email = userData.Email,
                 };
 
-                UsersDAO usersDAO = new UsersDAO();
-                ProfileDAO profileDAO = new ProfileDAO();
-                int result = usersDAO.AddUser(newSignIn);
+                int result = UsersDAO.AddUser(newSignIn);
 
                 if(result == 1) {
 
                     var newProfile = new Profile {
-                        idUser = usersDAO.GetIdUserByUsername(userData.Username),
+                        idUser = UsersDAO.GetIdUserByUsername(userData.Username),
                         profileLevel = 0,
                         totalPoints = 0,
                         matchesWon = 0,
                         imageId = 0,
                     };
 
-                    int result2 = profileDAO.AddProfile(newProfile);
+                    int result2 = ProfileDAO.AddProfile(newProfile);
 
                     if(result2 == 1) {
                         Console.WriteLine("User added");
                         return true;
                     } else {
-                        usersDAO.DeleteUser(userData.Username);
+                        UsersDAO.DeleteUser(userData.Username);
                         return false;
                     }
                 } else {
@@ -156,7 +150,6 @@ namespace GoatverseService {
 
             } else {
 
-                var callback = OperationContext.Current.GetCallbackChannel<ILobbyServiceCallback>();
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = new ConcurrentDictionary<string, ILobbyServiceCallback>();
                 lobbiesDictionary.TryAdd(lobbyCode, lobby);
                 Console.WriteLine($"Usuario {username} ha creado el lobby {lobbyCode}");
@@ -192,10 +185,9 @@ namespace GoatverseService {
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
                 if(lobby.ContainsKey(username)) {
 
-                    ILobbyServiceCallback callback;
-                    lobby.TryRemove(username, out callback);
+                    lobby.TryRemove(username, out ILobbyServiceCallback callback);
 
-                    if(lobby.IsEmpty) {
+                    if (lobby.IsEmpty) {
 
                         ConcurrentDictionary<string, ILobbyServiceCallback> removedUser;
                         lobbiesDictionary.TryRemove(lobbyCode, out removedUser);
@@ -224,9 +216,7 @@ namespace GoatverseService {
                     bool userAdded = lobby.TryAdd(messageData.Username, callbackChannel);
                     if(userAdded) {
                         Console.WriteLine($"Usuario {messageData.Username} agregado al Lobby.");
-                    } else {
-
-                    }
+                    } 
                 } else {
 
                     lobby[messageData.Username] = callbackChannel;
@@ -240,11 +230,10 @@ namespace GoatverseService {
                         Console.WriteLine($"Mensaje enviado a: {usersInLobby.Key}");
                         usersInLobby.Value.ServiceGetMessage(messageData);
                     } catch(Exception ex) {
-
+                        Console.WriteLine($"Error debido enviado a: {ex.Message}");
                     }
                 }
-            } else {
-            }
+            } 
         }
 
         private void ServiceNotifyPlayersInLobby(string lobbyCode) {
@@ -254,12 +243,10 @@ namespace GoatverseService {
                 List<PlayerData> playerList = new List<PlayerData>();
 
                 foreach(var player in lobby.Keys) {
-                    UsersDAO usersDAO = new UsersDAO();
-                    ProfileDAO profileDAO = new ProfileDAO();
 
-                    int idUser = usersDAO.GetIdUserByUsername(player);
-                    int profileLevel = profileDAO.GetProfileLevelByIdUser(idUser);
-                    int profileImageId = profileDAO.GetImageIdByIdUser(idUser);
+                    int idUser = UsersDAO.GetIdUserByUsername(player);
+                    int profileLevel = ProfileDAO.GetProfileLevelByIdUser(idUser);
+                    int profileImageId = ProfileDAO.GetImageIdByIdUser(idUser);
 
                     playerList.Add(new PlayerData {
                         Username = player,
@@ -293,7 +280,7 @@ namespace GoatverseService {
             return countUsers;
         }
 
-        public void StartMatch(string lobbyCode) {
+        public static void StartMatch(string lobbyCode) {
             if(lobbiesDictionary.TryGetValue(lobbyCode, out var lobby)) {
                 Task.Run(() => {
                     foreach(var playerCallback in lobby.Values) {
@@ -322,24 +309,20 @@ namespace GoatverseService {
     public partial class ServiceImplementation : IProfilesManager {
  
         public ProfileData ServiceLoadProfileData(string username) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idUser = usersDAO.GetIdUserByUsername(username);
+            int idUser = UsersDAO.GetIdUserByUsername(username);
 
-            ProfileDAO profileDAO = new ProfileDAO();
             var profileData = new ProfileData() {
-                ProfileLevel = profileDAO.GetProfileLevelByIdUser(idUser),
-                MatchesWon = profileDAO.GetMatchesWonByIdUser(idUser),
-                ImageId = profileDAO.GetImageIdByIdUser(idUser),
+                ProfileLevel = ProfileDAO.GetProfileLevelByIdUser(idUser),
+                MatchesWon = ProfileDAO.GetMatchesWonByIdUser(idUser),
+                ImageId = ProfileDAO.GetImageIdByIdUser(idUser),
             };
 
             return profileData;
         }
 
         public bool ServiceChangeProfileImage(string username, int imageId) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idUser = usersDAO.GetIdUserByUsername(username);
-            ProfileDAO profileDAO = new ProfileDAO();
-            int result = profileDAO.ChangeProfileImageByIdUser(idUser, imageId);
+            int idUser = UsersDAO.GetIdUserByUsername(username);
+            int result = ProfileDAO.ChangeProfileImageByIdUser(idUser, imageId);
 
             return result == 1;
         }
@@ -348,42 +331,37 @@ namespace GoatverseService {
     public partial class ServiceImplementation : IFriendsManager {
 
         public bool ServiceAcceptFriendRequest(string username1, string username2) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idSender = usersDAO.GetIdUserByUsername(username1);
-            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+            
+            int idSender = UsersDAO.GetIdUserByUsername(username1);
+            int idReceiver = UsersDAO.GetIdUserByUsername(username2);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            int result = friendsDAO.AcceptFriendRequest(idSender, idReceiver);
+            int result = FriendsDAO.AcceptFriendRequest(idSender, idReceiver);
 
             return result == 1;
         }
 
         public bool ServiceSendFriendRequest(string username1, string username2) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idSender = usersDAO.GetIdUserByUsername(username1);
-            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+            
+            int idSender = UsersDAO.GetIdUserByUsername(username1);
+            int idReceiver = UsersDAO.GetIdUserByUsername(username2);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            int result = friendsDAO.AddFriend(idSender, idReceiver);
+            int result = FriendsDAO.AddFriend(idSender, idReceiver);
             return result == 1;
         }
 
         public List<PlayerData> ServiceGetFriends(string username) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idRequest = usersDAO.GetIdUserByUsername(username);
+            
+            int idRequest = UsersDAO.GetIdUserByUsername(username);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            List<int> listIdFriends = friendsDAO.GetFriends(idRequest);
+            List<int> listIdFriends = FriendsDAO.GetFriends(idRequest);
             List<PlayerData> friendsData = new List<PlayerData>();
 
-            BlockedDAO blockedDAO = new BlockedDAO();
 
             foreach(int idFriend in listIdFriends) {
-                if (!blockedDAO.IsUserBlocked(idRequest, idFriend)) {
-                    ProfileDAO profileDAO = new ProfileDAO();
-                    string usernameFriend = usersDAO.GetUsernameByIdUser(idFriend);
-                    int friendLevel = profileDAO.GetProfileLevelByIdUser(idFriend);
-                    int friendProfileImageId = profileDAO.GetImageIdByIdUser(idFriend);
+                if (!BlockedDAO.IsUserBlocked(idRequest, idFriend)) {
+                    string usernameFriend = UsersDAO.GetUsernameByIdUser(idFriend);
+                    int friendLevel = ProfileDAO.GetProfileLevelByIdUser(idFriend);
+                    int friendProfileImageId = ProfileDAO.GetImageIdByIdUser(idFriend);
 
                     friendsData.Add(new PlayerData {
                         Username = usernameFriend,
@@ -397,19 +375,16 @@ namespace GoatverseService {
         }
 
         public List<PlayerData> ServiceGetBlockedUsers(string username) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idRequest = usersDAO.GetIdUserByUsername(username);
-            BlockedDAO blockedDAO = new BlockedDAO();
+            int idRequest = UsersDAO.GetIdUserByUsername(username);
             
-            List<int> listIdFriends = blockedDAO.GetBlockedUsers(idRequest);
+            List<int> listIdFriends = BlockedDAO.GetBlockedUsers(idRequest);
             List<PlayerData> blockedData = new List<PlayerData>();
 
             foreach (int idBlocked in listIdFriends) {
                 
-                ProfileDAO profileDAO = new ProfileDAO();
-                string usernameFriend = usersDAO.GetUsernameByIdUser(idBlocked);
-                int friendLevel = profileDAO.GetProfileLevelByIdUser(idBlocked);
-                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idBlocked);
+                string usernameFriend = UsersDAO.GetUsernameByIdUser(idBlocked);
+                int friendLevel = ProfileDAO.GetProfileLevelByIdUser(idBlocked);
+                int friendProfileImageId = ProfileDAO.GetImageIdByIdUser(idBlocked);
 
                 blockedData.Add(new PlayerData {
                     Username = usernameFriend,
@@ -423,38 +398,34 @@ namespace GoatverseService {
         }
 
         public bool ServiceRemoveFriend(string username1, string username2) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idSender = usersDAO.GetIdUserByUsername(username1);
-            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+            
+            int idSender = UsersDAO.GetIdUserByUsername(username1);
+            int idReceiver = UsersDAO.GetIdUserByUsername(username2);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            int result = friendsDAO.DeleteFriend(idSender, idReceiver);
+            int result = FriendsDAO.DeleteFriend(idSender, idReceiver);
             return result == 1;
         }
 
         public bool ServiceIsPendingFriendRequest(string username1, string username2) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idSender = usersDAO.GetIdUserByUsername(username1);
-            int idReceiver = usersDAO.GetIdUserByUsername(username2);
+            
+            int idSender = UsersDAO.GetIdUserByUsername(username1);
+            int idReceiver = UsersDAO.GetIdUserByUsername(username2);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            bool result = friendsDAO.IsFriendRequestPending(idSender, idReceiver);
+            bool result = FriendsDAO.IsFriendRequestPending(idSender, idReceiver);
             return result;
         }
 
         public List<PlayerData> ServiceGetPendingFriendRequest(string username) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idReceiver = usersDAO.GetIdUserByUsername(username);
+            
+            int idReceiver = UsersDAO.GetIdUserByUsername(username);
 
-            FriendsDAO friendsDAO = new FriendsDAO();
-            List<int> listIdFriends = friendsDAO.GetPendingFriendRequests(idReceiver);
+            List<int> listIdFriends = FriendsDAO.GetPendingFriendRequests(idReceiver);
             List<PlayerData> friendsData = new List<PlayerData>();
 
             foreach(int idPendingFriend in listIdFriends) {
-                ProfileDAO profileDAO = new ProfileDAO();
-                string usernameFriend = usersDAO.GetUsernameByIdUser(idPendingFriend);
-                int friendLevel = profileDAO.GetProfileLevelByIdUser(idPendingFriend);
-                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idPendingFriend);
+                string usernameFriend = UsersDAO.GetUsernameByIdUser(idPendingFriend);
+                int friendLevel = ProfileDAO.GetProfileLevelByIdUser(idPendingFriend);
+                int friendProfileImageId = ProfileDAO.GetImageIdByIdUser(idPendingFriend);
 
                 friendsData.Add(new PlayerData {
                     Username = usernameFriend,
@@ -467,32 +438,29 @@ namespace GoatverseService {
         }
 
         public bool ServiceIsUserBlocked(string usernameBlocker, string usernameBlocked) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
-            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+            
+            int idBlocker = UsersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = UsersDAO.GetIdUserByUsername(usernameBlocked);
 
-            BlockedDAO blockedDAO = new BlockedDAO();
-            bool result = blockedDAO.IsUserBlocked(idBlocker, idBlocked);
+            bool result = BlockedDAO.IsUserBlocked(idBlocker, idBlocked);
             return result;
         }
 
         public bool ServiceRemoveBlock(string usernameBlocker, string usernameBlocked) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
-            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+            
+            int idBlocker = UsersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = UsersDAO.GetIdUserByUsername(usernameBlocked);
 
-            BlockedDAO blockedDAO = new BlockedDAO();
-            int result = blockedDAO.DeleteBlock(idBlocker, idBlocked);
+            int result = BlockedDAO.DeleteBlock(idBlocker, idBlocked);
             return result == 1;
         }
 
         public bool ServiceBlockUser(string usernameBlocker, string usernameBlocked) {
-            UsersDAO usersDAO = new UsersDAO();
-            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
-            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+            
+            int idBlocker = UsersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = UsersDAO.GetIdUserByUsername(usernameBlocked);
 
-            BlockedDAO blockedDAO = new BlockedDAO();
-            int result = blockedDAO.BlockUser(idBlocker, idBlocked);
+            int result = BlockedDAO.BlockUser(idBlocker, idBlocked);
             return result == 1;
         }
 
@@ -593,8 +561,7 @@ namespace GoatverseService {
     public partial class ServiceImplementation : ICardsManager {
 
         public List<CardData> ServiceGetAllCards() {
-            CardsDAO cardsDAO = new CardsDAO();
-            var cards = cardsDAO.GetAllCards();
+            var cards = CardsDAO.GetAllCards();
 
             // Convertimos las entidades a un formato más amigable para el cliente
             var cardDataList = new List<CardData>();
@@ -614,8 +581,7 @@ namespace GoatverseService {
         }
 
         public CardData ServiceGetCardById(int id) {
-            CardsDAO cardsDAO = new CardsDAO();
-            var card = cardsDAO.GetCardById(id);
+            var card = CardsDAO.GetCardById(id);
 
             if(card != null) {
                 return new CardData {
@@ -633,7 +599,6 @@ namespace GoatverseService {
         }
 
         public bool ServiceAddCard(CardData cardData) {
-            CardsDAO cardsDAO = new CardsDAO();
 
             var newCard = new Cards {
                 cardName = cardData.CardName,
@@ -644,13 +609,12 @@ namespace GoatverseService {
                 imageCardId = cardData.ImageCardId
             };
 
-            int result = cardsDAO.AddCard(newCard);
+            int result = CardsDAO.AddCard(newCard);
             return result > 0;
         }
 
         public bool ServiceDeleteCard(int id) {
-            CardsDAO cardsDAO = new CardsDAO();
-            int result = cardsDAO.DeleteCard(id);
+            int result = CardsDAO.DeleteCard(id);
             return result > 0;
         }
     }

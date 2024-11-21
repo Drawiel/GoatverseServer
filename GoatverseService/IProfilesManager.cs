@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoatverseService {
-    [ServiceContract(CallbackContract = typeof(IProfilesManagerCallback))]
+    [ServiceContract]
     public interface IProfilesManager {
         [OperationContract]
         ProfileData ServiceLoadProfileData(string username);
@@ -16,33 +16,23 @@ namespace GoatverseService {
         bool ServiceChangeProfileImage(string username, int imageId);
 
     }
-    [ServiceContract]
-    internal interface IProfilesManagerCallback {
-
-    }
 
 
     [DataContract]
     public class ProfileData {
-        private int idProfile;
-        private int profileLevel;
-        private int totalPoints;
-        private int matchesWon;
-        private int idUser;
-        private int imageId;
 
         [DataMember]
-        public int IdProfile { get { return idProfile; } set { idProfile = value; } }
+        public int IdProfile { get; set; }
         [DataMember] 
-        public int ProfileLevel { get { return profileLevel; } set { profileLevel = value; } }
+        public int ProfileLevel { get; set; }
         [DataMember] 
-        public int TotalPoints { get { return totalPoints; } set { totalPoints = value; } }
+        public int TotalPoints { get; set; }
         [DataMember]
-        public int MatchesWon { get { return matchesWon; } set {  matchesWon = value; } }
+        public int MatchesWon { get; set; }
         [DataMember]
-        public int IdUser { get {   return idUser; } set {  idUser = value; } }
+        public int IdUser { get; set; }
         [DataMember]
-        public int ImageId { get { return imageId; } set { imageId = value; } }
+        public int ImageId { get; set; }
 
 
 

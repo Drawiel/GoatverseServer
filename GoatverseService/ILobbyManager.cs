@@ -22,7 +22,7 @@ namespace GoatverseService {
         bool ServiceDisconnectFromLobby(string username, string lobbyCode);
 
         [OperationContract]
-        int ServiceCountPlayersInLobby(string lobbycode);
+        int ServiceCountPlayersInLobby(string lobbyCode);
 
         [OperationContract]
         bool ServiceCreateLobby(string username, string lobbyCode);
@@ -46,23 +46,20 @@ namespace GoatverseService {
         void ServiceNotifyMatchStart();
 
     }
-}
 
     [DataContract]
     public class MessageData {
 
-        private String username;
-        private String idUser;
-        private String message;
-        private String lobbyCode;
-
         [DataMember]
-        public String Username { get { return username; } set { username = value; } }
+        public String Username { get; set; }
         [DataMember]
-        public String IdUser { get { return idUser; } set { idUser = value; } }
+        public String IdUser { get; set; }
         [DataMember]
-        public String Message { get { return message; } set { message = value; } }
+        public String Message { get; set; }
         [DataMember]
-        public String LobbyCode { get { return lobbyCode; } set { lobbyCode = value; } }
+        public String LobbyCode { get; set; }
     }
+}
+
+    
 

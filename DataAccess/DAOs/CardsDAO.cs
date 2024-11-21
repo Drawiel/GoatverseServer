@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace DataAccess.DAOs {
-    public class CardsDAO {
+    public static class CardsDAO {
 
-        public List<Cards> GetAllCards() {
+        public static List<Cards> GetAllCards() {
             using(var database = new GoatverseEntities()) {
                 return database.Cards.ToList();
             }
         }
 
-        public Cards GetCardById(int id) {
+        public static Cards GetCardById(int id) {
             using(var database = new GoatverseEntities()) {
                 return database.Cards.SingleOrDefault(c => c.idCard == id);
             }
         }
 
-        public int AddCard(Cards card) {
+        public static int AddCard(Cards card) {
             using(var database = new GoatverseEntities()) {
                 database.Cards.Add(card);
                 return database.SaveChanges();
             }
         }
 
-        public int DeleteCard(int id) {
+        public static int DeleteCard(int id) {
             using(var database = new GoatverseEntities()) {
                 var card = database.Cards.SingleOrDefault(c => c.idCard == id);
                 if(card != null) {

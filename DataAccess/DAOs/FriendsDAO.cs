@@ -5,14 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.DAOs {
-    public class FriendsDAO {
+    public static class FriendsDAO {
 
-        public int AddFriend(int idUser1, int idUser2) {
+        private const string constPending = "Pending";
+        private const string constAccepted = "Accepted";
+
+        public static int AddFriend(int idUser1, int idUser2) {
             using (var database = new GoatverseEntities()) {
                 var newFriendship = new Friends {
                     idUser1 = idUser1,
                     idUser2 = idUser2,
-                    statusRequest = "Pending",
+                    statusRequest = constPending,
                 };
 
                 database.Friends.Add(newFriendship);
@@ -20,12 +23,12 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public int AcceptFriendRequest(int idUser1, int idUser2) {
+        public static int AcceptFriendRequest(int idUser1, int idUser2) {
             using (var database = new GoatverseEntities()) {
                 var friendship = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2)).SingleOrDefault();
 
-                if (friendship != null && friendship.statusRequest == "Pending") {
-                    friendship.statusRequest = "Accepted";
+                if (friendship != null && friendship.statusRequest == constPending) {
+                    friendship.statusRequest = constAccepted;
                     return database.SaveChanges();
                 }
 
@@ -33,7 +36,7 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public int DeleteFriend(int idUser1, int idUser2) {
+        public static int DeleteFriend(int idUser1, int idUser2) {
             using (var database = new GoatverseEntities()) {
                 var friendship = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2)).SingleOrDefault();
 
@@ -46,33 +49,33 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public List<int> GetFriends(int userId) {
+        public static List<int> GetFriends(int userId) {
             using (var database = new GoatverseEntities()) {
-                var idFriends = database.Friends.Where(f => (f.idUser1 == userId || f.idUser2 == userId) && f.statusRequest == "Accepted").Select(f => f.idUser1 == userId ? f.idUser2 : f.idUser1).ToList();
+                var idFriends = database.Friends.Where(f => (f.idUser1 == userId || f.idUser2 == userId) && f.statusRequest == constAccepted).Select(f => f.idUser1 == userId ? f.idUser2 : f.idUser1).ToList();
 
                 return idFriends;
             }
         }
 
-        public bool IsFriend(int idUser1, int idUser2) {
+        public static bool IsFriend(int idUser1, int idUser2) {
             using (var database = new GoatverseEntities()) {
-                var friendship = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2) && f.statusRequest == "Accepted").SingleOrDefault();
+                var friendship = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2) && f.statusRequest == constAccepted).SingleOrDefault();
 
                 return friendship != null;
             }
         }
 
-        public bool IsFriendRequestPending(int idUser1, int idUser2) {
+        public static bool IsFriendRequestPending(int idUser1, int idUser2) {
             using (var database = new GoatverseEntities()) {
-                var pendingRequest = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2) && f.statusRequest == "Pending").SingleOrDefault();
+                var pendingRequest = database.Friends.Where(f => (f.idUser1 == idUser1) && (f.idUser2 == idUser2) && f.statusRequest == constPending).SingleOrDefault();
 
                 return pendingRequest != null;
             }
         }
 
-        public List<int> GetPendingFriendRequests(int userId) {
+        public static List<int> GetPendingFriendRequests(int userId) {
             using (var database = new GoatverseEntities()) {
-                var idFriends = database.Friends.Where(f => (f.idUser2 == userId) && f.statusRequest == "Pending").Select(f => f.idUser1).ToList();
+                var idFriends = database.Friends.Where(f => (f.idUser2 == userId) && f.statusRequest == constPending).Select(f => f.idUser1).ToList();
 
                 return idFriends;
             }

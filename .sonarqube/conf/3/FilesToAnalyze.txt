@@ -1,0 +1,12 @@
+﻿C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\ServiceImplementationTest.cs
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\Properties\AssemblyInfo.cs
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\ProfileDAOTest.cs
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\CardsDAOTest.cs
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\FriendsDAOTest.cs
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\UsersDAOTest.cs
+C:\Users\daur0\source\repos\GoatverseServer\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+C:\Users\daur0\source\repos\GoatverseServer\packages\MSTest.TestAdapter.2.2.10\build\_common\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+C:\Users\daur0\source\repos\GoatverseServer\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+C:\Users\daur0\source\repos\GoatverseServer\packages\MSTest.TestAdapter.2.2.10\build\net46\Microsoft.TestPlatform.AdapterUtilities.dll
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\App.config
+C:\Users\daur0\source\repos\GoatverseServer\Server.Tests\packages.config

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GoatverseServer {
-    internal class Program {
+    internal static class Program {
         static void Main(string[] args) {
             using (ServiceHost host = new ServiceHost(typeof(GoatverseService.ServiceImplementation))) {
                 host.Open();

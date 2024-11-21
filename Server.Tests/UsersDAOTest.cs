@@ -6,7 +6,6 @@ using System;
 namespace DataAccess.Tests {
     [TestClass]
     public class UsersDAOTest {
-        private UsersDAO usersDAO = new UsersDAO();
 
         [TestMethod]
         public void TestAddUserSuccess() {
@@ -18,11 +17,11 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = usersDAO.AddUser(newUser);
+            int result = UsersDAO.AddUser(newUser);
 
             // Assert
             Assert.AreEqual(1, result);
-            usersDAO.DeleteUser(newUser.username); 
+            UsersDAO.DeleteUser(newUser.username); 
         }
 
 
@@ -34,10 +33,10 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("PasswordToDelete"),
                 email = "deleteuser@example.com"
             };
-            usersDAO.AddUser(newUser); 
+            UsersDAO.AddUser(newUser); 
 
             // Act
-            int result = usersDAO.DeleteUser(newUser.username);
+            int result = UsersDAO.DeleteUser(newUser.username);
 
             // Assert
             Assert.AreEqual(1, result); 
@@ -47,7 +46,7 @@ namespace DataAccess.Tests {
         [ExpectedException(typeof(InvalidOperationException))]
         public void TestDeleteUserNonExisting() {
             // Act
-            usersDAO.DeleteUser("NonExistingUser"); 
+            UsersDAO.DeleteUser("NonExistingUser"); 
         }
 
         [TestMethod]
@@ -58,7 +57,7 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("OldPassword"),
                 email = "updateuser@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var updatedUser = new Users {
                 username = "NewUsername",
@@ -67,11 +66,11 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = usersDAO.UpdateUserPasswordAndUsernameByEmail(updatedUser);
+            int result = UsersDAO.UpdateUserPasswordAndUsernameByEmail(updatedUser);
 
             // Assert
             Assert.AreEqual(1, result);
-            usersDAO.DeleteUser(updatedUser.username); 
+            UsersDAO.DeleteUser(updatedUser.username); 
         }
 
         [TestMethod]
@@ -82,20 +81,20 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("PasswordForId"),
                 email = "getuserid@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             // Act
-            int userId = usersDAO.GetIdUserByUsername(newUser.username);
+            int userId = UsersDAO.GetIdUserByUsername(newUser.username);
 
             // Assert
             Assert.AreNotEqual(0, userId); 
-            usersDAO.DeleteUser(newUser.username); 
+            UsersDAO.DeleteUser(newUser.username); 
         }
 
         [TestMethod]
         public void TestGetIdUserByUsernameNonExisting() {
             // Act
-            int userId = usersDAO.GetIdUserByUsername("NonExistingUser");
+            int userId = UsersDAO.GetIdUserByUsername("NonExistingUser");
 
             // Assert
             Assert.AreEqual(0, userId);
@@ -109,21 +108,21 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("PasswordForEmail"),
                 email = "getemail@example.com"
             };
-            usersDAO.AddUser(newUser);
-            int userId = usersDAO.GetIdUserByUsername(newUser.username);
+            UsersDAO.AddUser(newUser);
+            int userId = UsersDAO.GetIdUserByUsername(newUser.username);
 
             // Act
-            string email = usersDAO.GetEmailByIdUser(userId);
+            string email = UsersDAO.GetEmailByIdUser(userId);
 
             // Assert
             Assert.AreEqual("getemail@example.com", email);
-            usersDAO.DeleteUser(newUser.username); 
+            UsersDAO.DeleteUser(newUser.username); 
         }
 
         [TestMethod]
         public void TestGetEmailByIdUserNonExisting() {
             // Act
-            string email = usersDAO.GetEmailByIdUser(-1);
+            string email = UsersDAO.GetEmailByIdUser(-1);
 
             // Assert
             Assert.IsNull(email); 
@@ -137,21 +136,21 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("PasswordForUsername"),
                 email = "getusername@example.com"
             };
-            usersDAO.AddUser(newUser);
-            int userId = usersDAO.GetIdUserByUsername(newUser.username);
+            UsersDAO.AddUser(newUser);
+            int userId = UsersDAO.GetIdUserByUsername(newUser.username);
 
             // Act
-            string username = usersDAO.GetUsernameByIdUser(userId);
+            string username = UsersDAO.GetUsernameByIdUser(userId);
 
             // Assert
             Assert.AreEqual("UsernameById", username);
-            usersDAO.DeleteUser(newUser.username);
+            UsersDAO.DeleteUser(newUser.username);
         }
 
         [TestMethod]
         public void TestGetUsernameByIdUserNonExisting() {
             // Act
-            string username = usersDAO.GetUsernameByIdUser(-1);
+            string username = UsersDAO.GetUsernameByIdUser(-1);
 
             // Assert
             Assert.IsNull(username);

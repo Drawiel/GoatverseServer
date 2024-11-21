@@ -13,9 +13,6 @@ namespace Server.Tests {
     [TestClass]
     public class ServiceImplementationTest {
 
-        private UsersDAO usersDAO = new UsersDAO();
-        private ProfileDAO profileDAO = new ProfileDAO();
-
 
         [TestMethod]
         public void TestServiceTryLoginValidUserTrue() {
@@ -61,8 +58,8 @@ namespace Server.Tests {
 
             // Act
             bool result = service.ServiceTrySignIn(newUser);
-            profileDAO.DeleteProfile(usersDAO.GetIdUserByUsername(newUser.Username));
-            usersDAO.DeleteUser(newUser.Username);
+            ProfileDAO.DeleteProfile(UsersDAO.GetIdUserByUsername(newUser.Username));
+            UsersDAO.DeleteUser(newUser.Username);
 
             // Assert
             Assert.IsTrue(result);
@@ -81,8 +78,8 @@ namespace Server.Tests {
             // Act
             service.ServiceTrySignIn(existingUser);
             bool result = service.ServiceTrySignIn(existingUser);
-            profileDAO.DeleteProfile(usersDAO.GetIdUserByUsername(existingUser.Username));
-            usersDAO.DeleteUser(existingUser.Username);
+            ProfileDAO.DeleteProfile(UsersDAO.GetIdUserByUsername(existingUser.Username));
+            UsersDAO.DeleteUser(existingUser.Username);
 
             // Assert
             Assert.IsFalse(result);

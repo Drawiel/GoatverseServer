@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace DataAccess.DAOs {
-    public class MatchDAO {
-        public int CreateMatch(DateTime startTime) {
+    public static class MatchDAO {
+        public static int CreateMatch(DateTime startTime) {
             using(var database = new GoatverseEntities()) {
                 var newMatch = new Matches {
                     startTime = startTime, 
@@ -22,13 +22,13 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public Matches GetMatchById(int idMatch) {
+        public static Matches GetMatchById(int idMatch) {
             using(var database = new GoatverseEntities()) {
                 return database.Matches.FirstOrDefault(m => m.idMatch == idMatch);
             }
         }
 
-        public int UpdateMatch(int idMatch, int? idWinner, DateTime? endTime) {
+        public static int UpdateMatch(int idMatch, int? idWinner, DateTime? endTime) {
             using(var database = new GoatverseEntities()) {
                 var match = database.Matches.FirstOrDefault(m => m.idMatch == idMatch);
 
@@ -43,7 +43,7 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public List<Matches> GetRecentMatches(int topN) {
+        public static List<Matches> GetRecentMatches(int topN) {
             using(var database = new GoatverseEntities()) {
                 return database.Matches.OrderByDescending(m => m.startTime)
                                        .Take(topN)

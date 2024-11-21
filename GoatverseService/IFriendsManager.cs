@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using static GoatverseService.ServiceImplementation;
 
 namespace GoatverseService {
-    [ServiceContract(CallbackContract = typeof(IFriendsManagerCallback))]
+    [ServiceContract]
     public interface IFriendsManager {
         [OperationContract]
         bool ServiceSendFriendRequest(string username1,  string username2);
@@ -29,7 +29,7 @@ namespace GoatverseService {
         List<PlayerData> ServiceGetPendingFriendRequest(string username);
 
         [OperationContract]
-        bool ServiceIsUserBlocked(string username1, string username2);
+        bool ServiceIsUserBlocked(string usernameBlocker, string usernameBlocked);
 
         [OperationContract]
         List<PlayerData> ServiceGetBlockedUsers(string username);
@@ -41,24 +41,17 @@ namespace GoatverseService {
         bool ServiceBlockUser(string usernameBlocker, string usernameBlocked);
     }
 
-    [ServiceContract]
-    public interface IFriendsManagerCallback { }
-
     [DataContract]
     public class FriendsData {
-        private string sender;
-        private string receiver;
-        private string status;
-        private int idFriendship;
 
         [DataMember]
-        public string Sender { get { return sender; } set { sender = value; } }
+        public string Sender { get; set; }
         [DataMember]
-        public string Status { get { return status; } set { status = value; } }
+        public string Status { get; set; }
         [DataMember]
-        public int IdFriendship { get { return idFriendship; } set { idFriendship = value; } }
+        public int IdFriendship { get; set; }
         [DataMember]
-        public string Receiver { get { return receiver; } set { receiver = value; } }
+        public string Receiver { get; set; }
 
     }
 }

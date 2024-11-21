@@ -75,7 +75,6 @@
     <Compile Include="Cards.cs">
       <DependentUpon>ModelGoatverseDB.tt</DependentUpon>
     </Compile>
-    <Compile Include="Class1.cs" />
     <Compile Include="DAOs\BlockedDAO.cs" />
     <Compile Include="DAOs\CardsDAO.cs" />
     <Compile Include="DAOs\FriendsDAO.cs" />

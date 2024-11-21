@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DataAccess.DAOs {
-    public class BlockedDAO {
-        public int BlockUser(int idUserBlocked, int idUserBlocker) {
+    public static class BlockedDAO {
+        public static int BlockUser(int idUserBlocked, int idUserBlocker) {
             using (var database = new GoatverseEntities()) {
                 var newBlockUser = new Blocked {
                     idBlockedUser = idUserBlocked,
@@ -18,7 +18,7 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public int DeleteBlock(int idUserBlocked, int idUserBlocker) {
+        public static int DeleteBlock(int idUserBlocked, int idUserBlocker) {
             using (var database = new GoatverseEntities()) {
                 var block = database.Blocked.Where(b => (b.idBlocker == idUserBlocker) && (b.idBlockedUser == idUserBlocked)).SingleOrDefault();
 
@@ -31,7 +31,7 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public List<int> GetBlockedUsers(int idUserBlocker) {
+        public static List<int> GetBlockedUsers(int idUserBlocker) {
             using (var database = new GoatverseEntities()) {
                 var idBlockedUsers = database.Blocked.Where(b => (b.idBlocker == idUserBlocker)).Select(b => b.idBlockedUser).ToList();
 
@@ -39,7 +39,7 @@ namespace DataAccess.DAOs {
             }
         }
 
-        public bool IsUserBlocked(int idUserBlocker, int idUserBlocked) {
+        public static bool IsUserBlocked(int idUserBlocker, int idUserBlocked) {
             using (var database = new GoatverseEntities()) {
                 var isBlocked = database.Blocked.Where(b => (b.idBlocker == idUserBlocker) && (b.idBlockedUser == idUserBlocked)).SingleOrDefault();
 

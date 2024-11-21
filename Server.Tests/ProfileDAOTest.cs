@@ -5,8 +5,6 @@ using System;
 namespace DataAccess.Tests {
     [TestClass]
     public class ProfileDAOTest {
-        private UsersDAO usersDAO = new UsersDAO();
-        private ProfileDAO profileDAO = new ProfileDAO();
 
         [TestMethod]
         public void TestAddProfileSuccess() {
@@ -16,10 +14,10 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("ProfilePassword"),
                 email = "profileuser@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 5,
@@ -27,7 +25,7 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = profileDAO.AddProfile(newProfile);
+            int result = ProfileDAO.AddProfile(newProfile);
 
             // Assert
             Assert.AreEqual(1, result); 
@@ -42,23 +40,23 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("DeletePassword"),
                 email = "deleteprofile@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 5,
                 imageId = 100
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             // Act
-            int result = profileDAO.DeleteProfile((int)newProfile.idUser);
+            int result = ProfileDAO.DeleteProfile((int)newProfile.idUser);
 
             // Assert
             Assert.AreEqual(1, result); 
-            usersDAO.DeleteUser(newUser.username); 
+            UsersDAO.DeleteUser(newUser.username); 
         }
 
         [TestMethod]
@@ -69,16 +67,16 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("UpdatePassword"),
                 email = "updateprofile@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 5,
                 imageId = 100
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             var updatedProfile = new Profile {
                 idUser = newProfile.idUser,
@@ -89,7 +87,7 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = profileDAO.UpdateProfile(updatedProfile);
+            int result = ProfileDAO.UpdateProfile(updatedProfile);
 
             // Assert
             Assert.AreEqual(1, result); 
@@ -104,16 +102,16 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("ImagePassword"),
                 email = "changeimage@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 5,
                 imageId = 100
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             var updatedProfile = new Profile {
                 idUser = newProfile.idUser,
@@ -121,7 +119,7 @@ namespace DataAccess.Tests {
             };
 
             // Act
-            int result = profileDAO.ChangeProfileImageByIdUser((int)updatedProfile.idUser, (int)updatedProfile.imageId);
+            int result = ProfileDAO.ChangeProfileImageByIdUser((int)updatedProfile.idUser, (int)updatedProfile.imageId);
 
             // Assert
             Assert.AreEqual(1, result);
@@ -136,19 +134,19 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("ImagePassword"),
                 email = "getimage@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 5,
                 imageId = 300
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             // Act
-            int imageId = profileDAO.GetImageIdByIdUser((int)newProfile.idUser);
+            int imageId = ProfileDAO.GetImageIdByIdUser((int)newProfile.idUser);
 
             // Assert
             Assert.AreEqual(300, imageId);
@@ -163,19 +161,19 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("LevelPassword"),
                 email = "getlevel@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 3,
                 totalPoints = 200,
                 matchesWon = 20,
                 imageId = 150
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             // Act
-            int profileLevel = profileDAO.GetProfileLevelByIdUser((int)newProfile.idUser);
+            int profileLevel = ProfileDAO.GetProfileLevelByIdUser((int)newProfile.idUser);
 
             // Assert
             Assert.AreEqual(3, profileLevel);
@@ -190,19 +188,19 @@ namespace DataAccess.Tests {
                 password = BCrypt.Net.BCrypt.HashPassword("MatchesPassword"),
                 email = "getmatches@example.com"
             };
-            usersDAO.AddUser(newUser);
+            UsersDAO.AddUser(newUser);
 
             var newProfile = new Profile {
-                idUser = usersDAO.GetIdUserByUsername(newUser.username),
+                idUser = UsersDAO.GetIdUserByUsername(newUser.username),
                 profileLevel = 1,
                 totalPoints = 50,
                 matchesWon = 15,
                 imageId = 100
             };
-            profileDAO.AddProfile(newProfile);
+            ProfileDAO.AddProfile(newProfile);
 
             // Act
-            int matchesWon = profileDAO.GetMatchesWonByIdUser((int)newProfile.idUser);
+            int matchesWon = ProfileDAO.GetMatchesWonByIdUser((int)newProfile.idUser);
 
             // Assert
             Assert.AreEqual(15, matchesWon);
@@ -211,9 +209,9 @@ namespace DataAccess.Tests {
 
         
         private void CleanupUserAndProfile(string username) {
-            int userId = usersDAO.GetIdUserByUsername(username);
-            profileDAO.DeleteProfile(userId);
-            usersDAO.DeleteUser(username);
+            int userId = UsersDAO.GetIdUserByUsername(username);
+            ProfileDAO.DeleteProfile(userId);
+            UsersDAO.DeleteUser(username);
         }
     }
 }
