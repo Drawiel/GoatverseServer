@@ -15,8 +15,8 @@ namespace DataAccess
     public partial class Blocked
     {
         public int idBlock { get; set; }
-        public Nullable<int> idBlockedUser { get; set; }
-        public Nullable<int> idBlocker { get; set; }
+        public int idBlockedUser { get; set; }
+        public int idBlocker { get; set; }
     
         public virtual Users Users { get; set; }
         public virtual Users Users1 { get; set; }

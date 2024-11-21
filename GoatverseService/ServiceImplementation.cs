@@ -370,26 +370,56 @@ namespace GoatverseService {
 
         public List<PlayerData> ServiceGetFriends(string username) {
             UsersDAO usersDAO = new UsersDAO();
-            int idSender = usersDAO.GetIdUserByUsername(username);
+            int idRequest = usersDAO.GetIdUserByUsername(username);
 
             FriendsDAO friendsDAO = new FriendsDAO();
-            List<int> listIdFriends = friendsDAO.GetFriends(idSender);
+            List<int> listIdFriends = friendsDAO.GetFriends(idRequest);
             List<PlayerData> friendsData = new List<PlayerData>();
 
-            foreach(int idFriend in listIdFriends) {
-                ProfileDAO profileDAO = new ProfileDAO();
-                string usernameFriend = usersDAO.GetUsernameByIdUser(idFriend);
-                int friendLevel = profileDAO.GetProfileLevelByIdUser(idFriend);
-                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idFriend);
+            BlockedDAO blockedDAO = new BlockedDAO();
 
-                friendsData.Add(new PlayerData {
+            foreach(int idFriend in listIdFriends) {
+                if (!blockedDAO.IsUserBlocked(idRequest, idFriend)) {
+                    ProfileDAO profileDAO = new ProfileDAO();
+                    string usernameFriend = usersDAO.GetUsernameByIdUser(idFriend);
+                    int friendLevel = profileDAO.GetProfileLevelByIdUser(idFriend);
+                    int friendProfileImageId = profileDAO.GetImageIdByIdUser(idFriend);
+
+                    friendsData.Add(new PlayerData {
+                        Username = usernameFriend,
+                        Level = friendLevel,
+                        ImageId = friendProfileImageId,
+                    });
+                }
+            }
+
+            return friendsData;
+        }
+
+        public List<PlayerData> ServiceGetBlockedUsers(string username) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idRequest = usersDAO.GetIdUserByUsername(username);
+            BlockedDAO blockedDAO = new BlockedDAO();
+            
+            List<int> listIdFriends = blockedDAO.GetBlockedUsers(idRequest);
+            List<PlayerData> blockedData = new List<PlayerData>();
+
+            foreach (int idBlocked in listIdFriends) {
+                
+                ProfileDAO profileDAO = new ProfileDAO();
+                string usernameFriend = usersDAO.GetUsernameByIdUser(idBlocked);
+                int friendLevel = profileDAO.GetProfileLevelByIdUser(idBlocked);
+                int friendProfileImageId = profileDAO.GetImageIdByIdUser(idBlocked);
+
+                blockedData.Add(new PlayerData {
                     Username = usernameFriend,
                     Level = friendLevel,
                     ImageId = friendProfileImageId,
                 });
+                
             }
 
-            return friendsData;
+            return blockedData;
         }
 
         public bool ServiceRemoveFriend(string username1, string username2) {
@@ -434,6 +464,36 @@ namespace GoatverseService {
             }
 
             return friendsData;
+        }
+
+        public bool ServiceIsUserBlocked(string usernameBlocker, string usernameBlocked) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+
+            BlockedDAO blockedDAO = new BlockedDAO();
+            bool result = blockedDAO.IsUserBlocked(idBlocker, idBlocked);
+            return result;
+        }
+
+        public bool ServiceRemoveBlock(string usernameBlocker, string usernameBlocked) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+
+            BlockedDAO blockedDAO = new BlockedDAO();
+            int result = blockedDAO.DeleteBlock(idBlocker, idBlocked);
+            return result == 1;
+        }
+
+        public bool ServiceBlockUser(string usernameBlocker, string usernameBlocked) {
+            UsersDAO usersDAO = new UsersDAO();
+            int idBlocker = usersDAO.GetIdUserByUsername(usernameBlocker);
+            int idBlocked = usersDAO.GetIdUserByUsername(usernameBlocked);
+
+            BlockedDAO blockedDAO = new BlockedDAO();
+            int result = blockedDAO.BlockUser(idBlocker, idBlocked);
+            return result == 1;
         }
 
 

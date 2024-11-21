@@ -9,9 +9,9 @@
           <Key>
             <PropertyRef Name="idBlock" />
           </Key>
-          <Property Name="idBlock" Type="int" Nullable="false" />
-          <Property Name="idBlockedUser" Type="int" />
-          <Property Name="idBlocker" Type="int" />
+          <Property Name="idBlock" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idBlockedUser" Type="int" Nullable="false" />
+          <Property Name="idBlocker" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Cards">
           <Key>
@@ -83,7 +83,7 @@
           <Property Name="verified" Type="varchar" MaxLength="10" />
         </EntityType>
         <Association Name="FK_Blocked_Blocked">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Blocked" Type="Self.Blocked" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
@@ -95,7 +95,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Blocked_Blocker">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
           <End Role="Blocked" Type="Self.Blocked" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Users">
@@ -228,110 +228,14 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="GoatverseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="Cards">
-          <Key>
-            <PropertyRef Name="idCard" />
-          </Key>
-          <Property Name="idCard" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="cardName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="points" Type="Int32" />
-          <Property Name="cardType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="effectDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="imageCardId" Type="Int32" />
-        </EntityType>
-        <EntityType Name="Matches">
-          <Key>
-            <PropertyRef Name="idMatch" />
-          </Key>
-          <Property Name="idMatch" Type="Int32" Nullable="false" />
-          <Property Name="startTime" Type="DateTime" Precision="3" />
-          <Property Name="endTime" Type="DateTime" Precision="3" />
-          <Property Name="idWinner" Type="Int32" />
-          <NavigationProperty Name="Users" Relationship="Self.FK_Matches_Users" FromRole="Matches" ToRole="Users" />
-          <NavigationProperty Name="Users1" Relationship="GoatverseModel.MatchPlayers" FromRole="Matches" ToRole="Users" />
-        </EntityType>
-        <EntityType Name="Profile">
-          <Key>
-            <PropertyRef Name="idProfile" />
-          </Key>
-          <Property Name="idProfile" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="profileLevel" Type="Int32" />
-          <Property Name="totalPoints" Type="Int32" />
-          <Property Name="matchesWon" Type="Int32" />
-          <Property Name="idUser" Type="Int32" />
-          <NavigationProperty Name="Users" Relationship="Self.FK_Users_Profile" FromRole="Profile" ToRole="Users" />
-          <Property Name="imageId" Type="Int32" />
-        </EntityType>
-        <EntityType Name="Users">
-          <Key>
-            <PropertyRef Name="idUser" />
-          </Key>
-          <Property Name="idUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="email" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="username" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="password" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="verified" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Users" FromRole="Users" ToRole="Matches" />
-          <NavigationProperty Name="Profile" Relationship="Self.FK_Users_Profile" FromRole="Users" ToRole="Profile" />
-          <NavigationProperty Name="Friends" Relationship="GoatverseModel.FK_Friends_Users1" FromRole="Users" ToRole="Friends" />
-          <NavigationProperty Name="Friends1" Relationship="GoatverseModel.FK_Friends_Users2" FromRole="Users" ToRole="Friends" />
-          <NavigationProperty Name="Matches1" Relationship="GoatverseModel.MatchPlayers" FromRole="Users" ToRole="Matches" />
-          <NavigationProperty Name="Blocked" Relationship="GoatverseModel.FK_Blocked_Blocked" FromRole="Users" ToRole="Blocked" />
-          <NavigationProperty Name="Blocked1" Relationship="GoatverseModel.FK_Blocked_Blocker" FromRole="Users" ToRole="Blocked" />
-        </EntityType>
-        <Association Name="FK_Matches_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
-          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="idUser" />
-            </Principal>
-            <Dependent Role="Matches">
-              <PropertyRef Name="idWinner" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Users_Profile">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
-          <End Role="Profile" Type="Self.Profile" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="idUser" />
-            </Principal>
-            <Dependent Role="Profile">
-              <PropertyRef Name="idUser" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="GoatverseEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Cards" EntityType="Self.Cards" />
-          <EntitySet Name="Matches" EntityType="Self.Matches" />
-          <EntitySet Name="Profile" EntityType="Self.Profile" />
-          <EntitySet Name="Users" EntityType="Self.Users" />
-          <AssociationSet Name="FK_Matches_Users" Association="Self.FK_Matches_Users">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Matches" EntitySet="Matches" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Users_Profile" Association="Self.FK_Users_Profile">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Profile" EntitySet="Profile" />
-          </AssociationSet>
-          <EntitySet Name="Friends" EntityType="GoatverseModel.Friends" />
           <EntitySet Name="sysdiagrams" EntityType="GoatverseModel.sysdiagrams" />
-          <AssociationSet Name="FK_Friends_Users1" Association="GoatverseModel.FK_Friends_Users1">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Friends" EntitySet="Friends" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Friends_Users2" Association="GoatverseModel.FK_Friends_Users2">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Friends" EntitySet="Friends" />
-          </AssociationSet>
-          <AssociationSet Name="MatchPlayers" Association="GoatverseModel.MatchPlayers">
-            <End Role="Matches" EntitySet="Matches" />
-            <End Role="Users" EntitySet="Users" />
-          </AssociationSet>
           <EntitySet Name="Blocked" EntityType="GoatverseModel.Blocked" />
+          <EntitySet Name="Cards" EntityType="GoatverseModel.Cards" />
+          <EntitySet Name="Friends" EntityType="GoatverseModel.Friends" />
+          <EntitySet Name="Matches" EntityType="GoatverseModel.Matches" />
+          <EntitySet Name="Profile" EntityType="GoatverseModel.Profile" />
+          <EntitySet Name="Users" EntityType="GoatverseModel.Users" />
           <AssociationSet Name="FK_Blocked_Blocked" Association="GoatverseModel.FK_Blocked_Blocked">
             <End Role="Users" EntitySet="Users" />
             <End Role="Blocked" EntitySet="Blocked" />
@@ -340,7 +244,59 @@
             <End Role="Users" EntitySet="Users" />
             <End Role="Blocked" EntitySet="Blocked" />
           </AssociationSet>
-        </EntityContainer>
+          <AssociationSet Name="FK_Friends_Users1" Association="GoatverseModel.FK_Friends_Users1">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Friends" EntitySet="Friends" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Friends_Users2" Association="GoatverseModel.FK_Friends_Users2">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Friends" EntitySet="Friends" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Users" Association="GoatverseModel.FK_Matches_Users">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Users_Profile" Association="GoatverseModel.FK_Users_Profile">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Profile" EntitySet="Profile" />
+          </AssociationSet>
+          <AssociationSet Name="MatchPlayers" Association="GoatverseModel.MatchPlayers">
+            <End Role="Matches" EntitySet="Matches" />
+            <End Role="Users" EntitySet="Users" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="Blocked">
+          <Key>
+            <PropertyRef Name="idBlock" />
+          </Key>
+          <Property Name="idBlock" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idBlockedUser" Type="Int32" Nullable="false" />
+          <Property Name="idBlocker" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Users" Relationship="GoatverseModel.FK_Blocked_Blocked" FromRole="Blocked" ToRole="Users" />
+          <NavigationProperty Name="Users1" Relationship="GoatverseModel.FK_Blocked_Blocker" FromRole="Blocked" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Cards">
+          <Key>
+            <PropertyRef Name="idCard" />
+          </Key>
+          <Property Name="idCard" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="cardName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="points" Type="Int32" />
+          <Property Name="cardType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="effectDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="imageCardId" Type="Int32" />
+        </EntityType>
         <EntityType Name="Friends">
           <Key>
             <PropertyRef Name="idFriend" />
@@ -352,16 +308,70 @@
           <NavigationProperty Name="Users" Relationship="GoatverseModel.FK_Friends_Users1" FromRole="Friends" ToRole="Users" />
           <NavigationProperty Name="Users1" Relationship="GoatverseModel.FK_Friends_Users2" FromRole="Friends" ToRole="Users" />
         </EntityType>
-        <EntityType Name="sysdiagrams">
+        <EntityType Name="Matches">
           <Key>
-            <PropertyRef Name="diagram_id" />
+            <PropertyRef Name="idMatch" />
           </Key>
-          <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="principal_id" Type="Int32" Nullable="false" />
-          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="version" Type="Int32" />
-          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+          <Property Name="idMatch" Type="Int32" Nullable="false" />
+          <Property Name="startTime" Type="DateTime" Precision="3" />
+          <Property Name="endTime" Type="DateTime" Precision="3" />
+          <Property Name="idWinner" Type="Int32" />
+          <NavigationProperty Name="Users" Relationship="GoatverseModel.FK_Matches_Users" FromRole="Matches" ToRole="Users" />
+          <NavigationProperty Name="Users1" Relationship="GoatverseModel.MatchPlayers" FromRole="Matches" ToRole="Users" />
         </EntityType>
+        <EntityType Name="Profile">
+          <Key>
+            <PropertyRef Name="idProfile" />
+          </Key>
+          <Property Name="idProfile" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="profileLevel" Type="Int32" />
+          <Property Name="totalPoints" Type="Int32" />
+          <Property Name="matchesWon" Type="Int32" />
+          <Property Name="idUser" Type="Int32" />
+          <Property Name="imageId" Type="Int32" />
+          <NavigationProperty Name="Users" Relationship="GoatverseModel.FK_Users_Profile" FromRole="Profile" ToRole="Users" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="idUser" />
+          </Key>
+          <Property Name="idUser" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="username" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="password" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="verified" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Blocked" Relationship="GoatverseModel.FK_Blocked_Blocked" FromRole="Users" ToRole="Blocked" />
+          <NavigationProperty Name="Blocked1" Relationship="GoatverseModel.FK_Blocked_Blocker" FromRole="Users" ToRole="Blocked" />
+          <NavigationProperty Name="Friends" Relationship="GoatverseModel.FK_Friends_Users1" FromRole="Users" ToRole="Friends" />
+          <NavigationProperty Name="Friends1" Relationship="GoatverseModel.FK_Friends_Users2" FromRole="Users" ToRole="Friends" />
+          <NavigationProperty Name="Matches" Relationship="GoatverseModel.FK_Matches_Users" FromRole="Users" ToRole="Matches" />
+          <NavigationProperty Name="Profile" Relationship="GoatverseModel.FK_Users_Profile" FromRole="Users" ToRole="Profile" />
+          <NavigationProperty Name="Matches1" Relationship="GoatverseModel.MatchPlayers" FromRole="Users" ToRole="Matches" />
+        </EntityType>
+        <Association Name="FK_Blocked_Blocked">
+          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="1" />
+          <End Type="GoatverseModel.Blocked" Role="Blocked" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Blocked">
+              <PropertyRef Name="idBlockedUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Blocked_Blocker">
+          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="1" />
+          <End Type="GoatverseModel.Blocked" Role="Blocked" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Blocked">
+              <PropertyRef Name="idBlocker" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Friends_Users1">
           <End Type="GoatverseModel.Users" Role="Users" Multiplicity="1" />
           <End Type="GoatverseModel.Friends" Role="Friends" Multiplicity="*" />
@@ -386,93 +396,70 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Matches_Users">
+          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="0..1" />
+          <End Type="GoatverseModel.Matches" Role="Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="idWinner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Users_Profile">
+          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="0..1" />
+          <End Type="GoatverseModel.Profile" Role="Profile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="idUser" />
+            </Principal>
+            <Dependent Role="Profile">
+              <PropertyRef Name="idUser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="MatchPlayers">
           <End Type="GoatverseModel.Matches" Role="Matches" Multiplicity="*" />
           <End Type="GoatverseModel.Users" Role="Users" Multiplicity="*" />
         </Association>
-        <EntityType Name="Blocked">
-          <Key>
-            <PropertyRef Name="idBlock" />
-          </Key>
-          <Property Name="idBlock" Type="Int32" Nullable="false" />
-          <Property Name="idBlockedUser" Type="Int32" />
-          <Property Name="idBlocker" Type="Int32" />
-          <NavigationProperty Name="Users" Relationship="GoatverseModel.FK_Blocked_Blocked" FromRole="Blocked" ToRole="Users" />
-          <NavigationProperty Name="Users1" Relationship="GoatverseModel.FK_Blocked_Blocker" FromRole="Blocked" ToRole="Users" />
-        </EntityType>
-        <Association Name="FK_Blocked_Blocked">
-          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="0..1" />
-          <End Type="GoatverseModel.Blocked" Role="Blocked" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="idUser" />
-            </Principal>
-            <Dependent Role="Blocked">
-              <PropertyRef Name="idBlockedUser" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Blocked_Blocker">
-          <End Type="GoatverseModel.Users" Role="Users" Multiplicity="0..1" />
-          <End Type="GoatverseModel.Blocked" Role="Blocked" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="idUser" />
-            </Principal>
-            <Dependent Role="Blocked">
-              <PropertyRef Name="idBlocker" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="GoatverseModelStoreContainer" CdmEntityContainer="GoatverseEntities">
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="GoatverseModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="definition" ColumnName="definition" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Blocked">
+            <EntityTypeMapping TypeName="GoatverseModel.Blocked">
+              <MappingFragment StoreEntitySet="Blocked">
+                <ScalarProperty Name="idBlocker" ColumnName="idBlocker" />
+                <ScalarProperty Name="idBlockedUser" ColumnName="idBlockedUser" />
+                <ScalarProperty Name="idBlock" ColumnName="idBlock" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Cards">
             <EntityTypeMapping TypeName="GoatverseModel.Cards">
               <MappingFragment StoreEntitySet="Cards">
                 <ScalarProperty Name="imageCardId" ColumnName="imageCardId" />
-                <ScalarProperty Name="idCard" ColumnName="idCard" />
-                <ScalarProperty Name="cardName" ColumnName="cardName" />
-                <ScalarProperty Name="points" ColumnName="points" />
-                <ScalarProperty Name="cardType" ColumnName="cardType" />
-                <ScalarProperty Name="description" ColumnName="description" />
                 <ScalarProperty Name="effectDescription" ColumnName="effectDescription" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Matches">
-            <EntityTypeMapping TypeName="GoatverseModel.Matches">
-              <MappingFragment StoreEntitySet="Matches">
-                <ScalarProperty Name="idMatch" ColumnName="idMatch" />
-                <ScalarProperty Name="startTime" ColumnName="startTime" />
-                <ScalarProperty Name="endTime" ColumnName="endTime" />
-                <ScalarProperty Name="idWinner" ColumnName="idWinner" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Profile">
-            <EntityTypeMapping TypeName="GoatverseModel.Profile">
-              <MappingFragment StoreEntitySet="Profile">
-                <ScalarProperty Name="imageId" ColumnName="imageId" />
-                <ScalarProperty Name="idProfile" ColumnName="idProfile" />
-                <ScalarProperty Name="profileLevel" ColumnName="profileLevel" />
-                <ScalarProperty Name="totalPoints" ColumnName="totalPoints" />
-                <ScalarProperty Name="matchesWon" ColumnName="matchesWon" />
-                <ScalarProperty Name="idUser" ColumnName="idUser" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="GoatverseModel.Users">
-              <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="idUser" ColumnName="idUser" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="verified" ColumnName="verified" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="cardType" ColumnName="cardType" />
+                <ScalarProperty Name="points" ColumnName="points" />
+                <ScalarProperty Name="cardName" ColumnName="cardName" />
+                <ScalarProperty Name="idCard" ColumnName="idCard" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -486,14 +473,36 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="GoatverseModel.sysdiagrams">
-              <MappingFragment StoreEntitySet="sysdiagrams">
-                <ScalarProperty Name="definition" ColumnName="definition" />
-                <ScalarProperty Name="version" ColumnName="version" />
-                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
-                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
+          <EntitySetMapping Name="Matches">
+            <EntityTypeMapping TypeName="GoatverseModel.Matches">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="idWinner" ColumnName="idWinner" />
+                <ScalarProperty Name="endTime" ColumnName="endTime" />
+                <ScalarProperty Name="startTime" ColumnName="startTime" />
+                <ScalarProperty Name="idMatch" ColumnName="idMatch" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Profile">
+            <EntityTypeMapping TypeName="GoatverseModel.Profile">
+              <MappingFragment StoreEntitySet="Profile">
+                <ScalarProperty Name="imageId" ColumnName="imageId" />
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
+                <ScalarProperty Name="matchesWon" ColumnName="matchesWon" />
+                <ScalarProperty Name="totalPoints" ColumnName="totalPoints" />
+                <ScalarProperty Name="profileLevel" ColumnName="profileLevel" />
+                <ScalarProperty Name="idProfile" ColumnName="idProfile" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="GoatverseModel.Users">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="verified" ColumnName="verified" />
+                <ScalarProperty Name="password" ColumnName="password" />
+                <ScalarProperty Name="username" ColumnName="username" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="idUser" ColumnName="idUser" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -505,16 +514,7 @@
               <ScalarProperty Name="idMatch" ColumnName="idMatch" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="Blocked">
-            <EntityTypeMapping TypeName="GoatverseModel.Blocked">
-              <MappingFragment StoreEntitySet="Blocked">
-                <ScalarProperty Name="idBlocker" ColumnName="idBlocker" />
-                <ScalarProperty Name="idBlockedUser" ColumnName="idBlockedUser" />
-                <ScalarProperty Name="idBlock" ColumnName="idBlock" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-        </EntityContainerMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

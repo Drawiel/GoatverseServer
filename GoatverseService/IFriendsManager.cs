@@ -27,6 +27,18 @@ namespace GoatverseService {
 
         [OperationContract]
         List<PlayerData> ServiceGetPendingFriendRequest(string username);
+
+        [OperationContract]
+        bool ServiceIsUserBlocked(string username1, string username2);
+
+        [OperationContract]
+        List<PlayerData> ServiceGetBlockedUsers(string username);
+
+        [OperationContract]
+        bool ServiceRemoveBlock(string usernameBlocker, string usernameBlocked);
+
+        [OperationContract]
+        bool ServiceBlockUser(string usernameBlocker, string usernameBlocked);
     }
 
     [ServiceContract]

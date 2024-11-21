@@ -25,12 +25,12 @@ namespace DataAccess
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
+        public virtual DbSet<Blocked> Blocked { get; set; }
         public virtual DbSet<Cards> Cards { get; set; }
+        public virtual DbSet<Friends> Friends { get; set; }
         public virtual DbSet<Matches> Matches { get; set; }
         public virtual DbSet<Profile> Profile { get; set; }
         public virtual DbSet<Users> Users { get; set; }
-        public virtual DbSet<Friends> Friends { get; set; }
-        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
-        public virtual DbSet<Blocked> Blocked { get; set; }
     }
 }
