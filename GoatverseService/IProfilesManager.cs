@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using static GoatverseService.ServiceImplementation;
 
 namespace GoatverseService {
     [ServiceContract]
@@ -14,6 +15,9 @@ namespace GoatverseService {
 
         [OperationContract]
         bool ServiceChangeProfileImage(string username, int imageId);
+
+        [OperationContract]
+        ProfileData ServiceGetProfileByUserId(string userId);
 
     }
 

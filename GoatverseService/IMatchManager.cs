@@ -1,55 +1,65 @@
-﻿using System;
+﻿using DataAccess.DAOs;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
+using static GoatverseService.ServiceImplementation;
 
 namespace GoatverseService {
-    namespace GoatverseService {
 
-        [ServiceContract(CallbackContract = typeof(IMatchServiceCallback))]
-        public interface IMatchManager {
-            [OperationContract]
-            bool ServiceJoinMatch(string username, string matchId);
+    [ServiceContract(CallbackContract = typeof(IMatchServiceCallback))]
+    public interface IMatchManager {
 
-            [OperationContract(IsOneWay = true)]
-            void ServicePlayStack(string matchId, StackData stack);
+        [OperationContract]
+        MatchData ServiceCreateMatch(DateTime startTime);
 
-            [OperationContract]
-            List<CardData> ServiceDrawCards(string username, string matchId);
-        }
+        [OperationContract]
+        MatchData ServiceGetMatchById(string matchId);
 
-        [ServiceContract]
-        public interface IMatchServiceCallback {
-            [OperationContract(IsOneWay = true)]
-            void NotifyStackPlayed(StackData stack);
+        [OperationContract]
+        bool ServiceUpdateMatch(string matchId, string idWinner, DateTime? endTime);
 
-            [OperationContract(IsOneWay = true)]
-            void NotifyPlayerCardUpdate(string username, List<CardData> newHand);
-        }
+        [OperationContract]
+        List<MatchData> ServiceGetRecentMatches(int topN);
 
-        [DataContract]
-        public class CardData {
-            [DataMember]
-            public string CardName { get; set; }
+        [OperationContract]
+        List<CardData> ServiceGetCards();
 
-            [DataMember]
-            public int CardId { get; set; }
-        }
+        // Nuevos métodos para manejar los turnos
+        [OperationContract]
+        void ServiceInitializeGameTurns(string gameCode, List<string> gamertags);
 
-        [DataContract]
-        public class StackData {
-            [DataMember]
-            public string Username { get; set; }
+        [OperationContract]
+        void ServiceNotifyEndTurn(string gameCode, string currentGamertag);
 
-            [DataMember]
-            public List<CardData> CardsInStack { get; set; }
+        [OperationContract]
+        string ServiceGetCurrentTurn(string gameCode);
 
-            [DataMember]
-            public string MatchId { get; set; }
-        }
+    }
 
+    [ServiceContract]
+    public interface IMatchServiceCallback {
+        [OperationContract(IsOneWay = true)]
+        void NotifyEndGame(string matchId, string winnerUsername);
+
+        [OperationContract(IsOneWay = true)]
+        void UpdateCurrentTurn(string currentTurn);
+
+        [OperationContract(IsOneWay = true)]
+        void SyncTimer();
+    }
+
+    public class MatchData {
+        [DataMember]
+        public string IdMatch { get; set; } // Corresponde a la columna "idMatch" de la base de datos
+
+        [DataMember]
+        public DateTime? StartTime { get; set; } // Corresponde a la columna "startTime"
+
+        [DataMember]
+        public DateTime? EndTime { get; set; } // Corresponde a la columna "endTime"
+
+        [DataMember]
+        public string IdWinner { get; set; } // Corresponde a la columna "idWinner"
     }
 }

@@ -1,4 +1,4 @@
-﻿using GoatverseService.GoatverseService;
+﻿using static GoatverseService.ServiceImplementation;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;

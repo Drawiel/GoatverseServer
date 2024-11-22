@@ -78,5 +78,16 @@ namespace DataAccess.DAOs {
                 return (int)matchesWon;
             }
         }
+
+        public static Profile GetProfileByUserId(int idUser) {
+            using(var database = new GoatverseEntities()) {
+                var profile = (from p in database.Profile
+                               where p.idUser == idUser
+                               select p).SingleOrDefault();
+
+                return profile;
+            }
+        }
+
     }
 }

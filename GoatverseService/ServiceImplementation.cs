@@ -1,7 +1,7 @@
 ﻿using BCrypt.Net;
 using DataAccess;
 using DataAccess.DAOs;
-using GoatverseService.GoatverseService;
+using static GoatverseService.ServiceImplementation;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -326,6 +326,12 @@ namespace GoatverseService {
 
             return result == 1;
         }
+
+        public ProfileData ServiceGetProfileByUserId(string userId) {
+            // Llama al método ya definido en ProfileDAO
+            return ServiceGetProfileByUserId(userId); // O implementa la lógica necesaria aquí si es diferente
+        }
+
     }
 
     public partial class ServiceImplementation : IFriendsManager {
@@ -467,85 +473,181 @@ namespace GoatverseService {
 
     }
 
-    /*public partial class ServiceImplementation : IMatchManager {
-        private static ConcurrentDictionary<string, MatchSession> matchSessions =
-            new ConcurrentDictionary<string, MatchSession>();
+    public class MatchManager : IMatchManager {
+        private static Dictionary<string, List<string>> playersInGame = new Dictionary<string, List<string>>();
+        private static Dictionary<string, string> currentTurnByGame = new Dictionary<string, string>();
+        private static Dictionary<string, bool> turnTransitionState = new Dictionary<string, bool>();
+        private static Dictionary<string, Dictionary<string, IMatchServiceCallback>> gameConnections = new Dictionary<string, Dictionary<string, IMatchServiceCallback>>();
+        private static Dictionary<string, string> currentTurnsByGame = new Dictionary<string, string>(); 
+        private static Dictionary<string, DateTime> gameTimers = new Dictionary<string, DateTime>();  
 
-        public bool ServiceJoinMatch(string username, string matchId) {
-            if(!matchSessions.ContainsKey(matchId)) {
-                matchSessions.TryAdd(matchId, new MatchSession());
-            }
 
-            var match = matchSessions[matchId];
-            var callbackChannel = OperationContext.Current.GetCallbackChannel<IMatchServiceCallback>();
-
-            if(match.Players.ContainsKey(username)) {
-                return false; 
-            }
-
-            match.Players.TryAdd(username, new PlayerSession {
-                Username = username,
-                Callback = callbackChannel,
-                Cards = DrawInitialCards()
-            });
-
-            Console.WriteLine($"{username} joined match {matchId}");
-            return true;
+        public void ServiceInitializeGameTurns(string gameCode, List<string> gamertags) {
+            playersInGame[gameCode] = gamertags.OrderBy(_ => Guid.NewGuid()).ToList();
+            var firstPlayer = playersInGame[gameCode].First();
+            currentTurnByGame[gameCode] = firstPlayer;
+            turnTransitionState[gameCode] = false;
+            NotifyClientOfTurn(gameCode, firstPlayer);
         }
 
-        public void ServicePlayStack(string matchId, StackData stack) {
-            if(matchSessions.TryGetValue(matchId, out var match)) {
-                foreach(var player in match.Players.Values) {
-                    try {
-                        player.Callback.NotifyStackPlayed(stack);
-                    }
-                    catch(Exception ex) {
-                        Console.WriteLine($"Error notifying player {player.Username}: {ex.Message}");
-                    }
+        public void ServiceNotifyEndTurn(string gameCode, string currentGamertag) {
+            if(turnTransitionState.ContainsKey(gameCode) && !turnTransitionState[gameCode]) {
+                if(playersInGame.ContainsKey(gameCode)) {
+                    var players = playersInGame[gameCode];
+                    int currentIndex = players.IndexOf(currentGamertag);
+
+                    int nextIndex = (currentIndex + 1) % players.Count;
+                    var nextGametag = players[nextIndex];
+
+                    currentTurnByGame[gameCode] = nextGametag;
+                    turnTransitionState[gameCode] = true;
+                    NotifyClientOfTurn(gameCode, nextGametag);
                 }
             }
         }
 
-        public List<CardData> ServiceDrawCards(string username, string matchId) {
-            if(matchSessions.TryGetValue(matchId, out var match) &&
-                match.Players.TryGetValue(username, out var player)) {
-                while(player.Cards.Count < 5) {
-                    player.Cards.Add(DrawRandomCard());
-                }
+        public string ServiceGetCurrentTurn(string gameCode) {
+            return currentTurnByGame.ContainsKey(gameCode) ? currentTurnByGame[gameCode] : null;
+        }
 
-                Task.Run(() => {
-                    foreach(var otherPlayer in match.Players.Values) {
-                        try {
-                            otherPlayer.Callback.NotifyPlayerCardUpdate(username, player.Cards);
-                        }
-                        catch(Exception ex) {
-                            Console.WriteLine($"Error notifying player {otherPlayer.Username}: {ex.Message}");
-                        }
+        public void NotifyEndGame(string matchId, string winnerUsername) {
+            Console.WriteLine($"El juego con ID: {matchId} ha terminado.");
+            Console.WriteLine($"El ganador es: {winnerUsername}");
+        }
+
+        public void UpdateCurrentTurn(string currentTurn) {
+            Console.WriteLine($"Es el turno de: {currentTurn}");
+        }
+
+        public void SyncTimer() {
+            Console.WriteLine("Sincronizando temporizador...");
+        }
+
+        private void NotifyClientOfTurn(string gameCode, string nextGametag) {
+            if(gameConnections.ContainsKey(gameCode)) {
+                var playersInGame = gameConnections[gameCode];
+                foreach(var player in playersInGame) {
+                    IMatchServiceCallback callback = player.Value as IMatchServiceCallback;
+                    if(callback != null) {
+                        callback.UpdateCurrentTurn(nextGametag); 
+                        callback.SyncTimer();  
                     }
-                });
-
-                return player.Cards;
+                }
+                ResetTurnTransitionState(gameCode);
             }
-
-            return null;
         }
 
-        private List<CardData> DrawInitialCards() {
-            var cards = new List<CardData>();
-            for(int i = 0; i < 5; i++) {
-                cards.Add(DrawRandomCard());
+
+
+        private void ResetTurnTransitionState(string gameCode) {
+            if(turnTransitionState.ContainsKey(gameCode)) {
+                turnTransitionState[gameCode] = false;
             }
-            return cards;
         }
 
-        private CardData DrawRandomCard() {
-            var random = new Random();
-            return new CardData {
-                CardName = $"Card {random.Next(1, 50)}",
-                IdCard = random.Next(1, 50)
+        public MatchData ServiceCreateMatch(DateTime startTime) {
+            int idMatch = MatchDAO.CreateMatch(startTime);
+
+            return new MatchData {
+                IdMatch = idMatch.ToString(),
+                StartTime = startTime,
+                EndTime = null,
+                IdWinner = null
             };
         }
-    }*/
+
+        public MatchData ServiceGetMatchById(string matchId) {
+            if(!int.TryParse(matchId, out int id))
+                throw new ArgumentException("El ID de la partida debe ser un número.");
+
+            var match = MatchDAO.GetMatchById(id);
+
+            if(match == null)
+                return null;
+
+            return new MatchData {
+                IdMatch = match.idMatch.ToString(),
+                StartTime = match.startTime,
+                EndTime = match.endTime,
+                IdWinner = match.idWinner?.ToString()
+            };
+        }
+
+        public bool ServiceUpdateMatch(string matchId, string idWinner, DateTime? endTime) {
+            if(!int.TryParse(matchId, out int idMatch))
+                throw new ArgumentException("El ID de la partida debe ser un número.");
+
+            int? idWinnerParsed = null;
+            if(!string.IsNullOrEmpty(idWinner)) {
+                if(!int.TryParse(idWinner, out int id))
+                    throw new ArgumentException("El ID del ganador debe ser un número.");
+                idWinnerParsed = id;
+            }
+
+            int result = MatchDAO.UpdateMatch(idMatch, idWinnerParsed, endTime);
+
+            return result > 0; 
+        }
+
+        public List<MatchData> ServiceGetRecentMatches(int topN) {
+            var matches = MatchDAO.GetRecentMatches(topN);
+
+            var matchDataList = new List<MatchData>();
+            foreach(var match in matches) {
+                matchDataList.Add(new MatchData {
+                    IdMatch = match.idMatch.ToString(),
+                    StartTime = match.startTime,
+                    EndTime = match.endTime,
+                    IdWinner = match.idWinner?.ToString()
+                });
+            }
+
+            return matchDataList;
+        }
+
+        /* Obtener perfiles en una partida
+        public List<ProfileData> ServiceGetProfilesInMatch(string matchId) {
+            if(!int.TryParse(matchId, out int id))
+                throw new ArgumentException("El ID de la partida debe ser un número.");
+
+            var profiles = MatchDAO.GetProfilesInMatch(id);
+
+            var profileDataList = new List<ProfileData>();
+            foreach(var profile in profiles) {
+                profileDataList.Add(new ProfileData {
+                    IdProfile = profile.idProfile.ToString(),
+                    ProfileLevel = profile.profileLevel,
+                    TotalPoints = profile.totalPoints,
+                    MatchesWon = profile.matchesWon,
+                    UserId = profile.idUser.ToString(),
+                    ImageId = profile.imageId
+                });
+            }
+
+            return profileDataList;
+        }*/
+
+        // Obtener todas las cartas
+        public List<CardData> ServiceGetCards() {
+            var cards = CardsDAO.GetAllCards();
+
+            var cardDataList = new List<CardData>();
+            foreach(var card in cards) {
+                cardDataList.Add(new CardData {
+                    IdCard = card.idCard, 
+                    CardName = card.cardName,
+                    Points = card.points ?? 0, 
+                    CardType = card.cardType,
+                    Description = card.description,
+                    EffectDescription = card.effectDescription,
+                    ImageCardId = card.imageCardId.HasValue ? card.imageCardId.Value : 0
+                });
+            }
+
+            return cardDataList;
+        }
+
+    }
 
     public class MatchSession {
         public ConcurrentDictionary<string, PlayerSession> Players { get; } =
