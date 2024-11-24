@@ -16,40 +16,37 @@ namespace DataAccess.DAOs {
                 database.Matches.Add(newMatch);
                 database.SaveChanges();
 
-                return newMatch.idMatch; // Retorna el idMatch como int
+                return newMatch.idMatch;
             }
         }
 
-        // Obtener una partida por su id
         public static Matches GetMatchById(int idMatch) {
             using(var database = new GoatverseEntities()) {
                 return database.Matches.FirstOrDefault(m => m.idMatch == idMatch);
             }
         }
 
-        // Actualizar una partida (ganador y tiempo de finalización)
         public static int UpdateMatch(int idMatch, int? idWinner, DateTime? endTime) {
             using(var database = new GoatverseEntities()) {
                 var match = database.Matches.FirstOrDefault(m => m.idMatch == idMatch);
 
                 if(match != null) {
-                    match.idWinner = idWinner;  // Asignamos el ganador
-                    match.endTime = endTime;    // Asignamos el tiempo de fin
+                    match.idWinner = idWinner; 
+                    match.endTime = endTime;  
 
-                    return database.SaveChanges(); // Guardamos los cambios en la base de datos
+                    return database.SaveChanges(); 
                 }
 
-                return 0; // Retornamos 0 si no encontramos la partida
+                return 0;
             }
         }
 
-        // Obtener las últimas N partidas
         public static List<Matches> GetRecentMatches(int topN) {
-            using(var database = new GoatverseEntities()) {
+            using (var database = new GoatverseEntities()) {
                 return database.Matches
-                               .OrderByDescending(m => m.startTime)  // Ordenamos por tiempo de inicio, de más reciente a más antiguo
-                               .Take(topN)  // Limitar el número de partidas
-                               .ToList();  // Devolvemos la lista
+                               .OrderByDescending(m => m.startTime) 
+                               .Take(topN)  
+                               .ToList(); 
             }
         }
 
@@ -57,8 +54,8 @@ namespace DataAccess.DAOs {
         public static List<Profile> GetProfilesInMatch(int matchId) {
             using(var database = new GoatverseEntities()) {
                 return database.Profile
-                               .Where(p => p.IdMatch == matchId)  // Filtrar por la relación existente entre partida y perfil
-                               .ToList();  // Devolver la lista de perfiles
+                               .Where(p => p.IdMatch == matchId) 
+                               .ToList();  
             }
         }*/
     }

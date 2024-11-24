@@ -25,7 +25,6 @@ namespace GoatverseService {
         [OperationContract]
         List<CardData> ServiceGetCards();
 
-        // Nuevos métodos para manejar los turnos
         [OperationContract]
         void ServiceInitializeGameTurns(string gameCode, List<string> gamertags);
 
@@ -51,15 +50,15 @@ namespace GoatverseService {
 
     public class MatchData {
         [DataMember]
-        public string IdMatch { get; set; } // Corresponde a la columna "idMatch" de la base de datos
+        public string IdMatch { get; set; }
 
         [DataMember]
-        public DateTime? StartTime { get; set; } // Corresponde a la columna "startTime"
+        public DateTime? StartTime { get; set; } 
 
         [DataMember]
-        public DateTime? EndTime { get; set; } // Corresponde a la columna "endTime"
+        public DateTime? EndTime { get; set; } 
 
         [DataMember]
-        public string IdWinner { get; set; } // Corresponde a la columna "idWinner"
+        public string IdWinner { get; set; }
     }
 }

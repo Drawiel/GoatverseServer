@@ -328,8 +328,7 @@ namespace GoatverseService {
         }
 
         public ProfileData ServiceGetProfileByUserId(string userId) {
-            // Llama al método ya definido en ProfileDAO
-            return ServiceGetProfileByUserId(userId); // O implementa la lógica necesaria aquí si es diferente
+            return ServiceGetProfileByUserId(userId); 
         }
 
     }
@@ -647,17 +646,6 @@ namespace GoatverseService {
             return cardDataList;
         }
 
-    }
-
-    public class MatchSession {
-        public ConcurrentDictionary<string, PlayerSession> Players { get; } =
-            new ConcurrentDictionary<string, PlayerSession>();
-    }
-
-    public class PlayerSession {
-        public string Username { get; set; }
-        public List<CardData> Cards { get; set; }
-        public IMatchServiceCallback Callback { get; set; }
     }
 
     public partial class ServiceImplementation : ICardsManager {
