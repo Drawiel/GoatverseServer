@@ -472,7 +472,7 @@ namespace GoatverseService {
 
     }
 
-    public class MatchManager : IMatchManager {
+    public partial class ServiceImplementation : IMatchManager {
         private static Dictionary<string, List<string>> playersInGame = new Dictionary<string, List<string>>();
         private static Dictionary<string, string> currentTurnByGame = new Dictionary<string, string>();
         private static Dictionary<string, bool> turnTransitionState = new Dictionary<string, bool>();
@@ -486,7 +486,7 @@ namespace GoatverseService {
             var firstPlayer = playersInGame[gameCode].First();
             currentTurnByGame[gameCode] = firstPlayer;
             turnTransitionState[gameCode] = false;
-            NotifyClientOfTurn(gameCode, firstPlayer);
+            ServiceNotifyClientOfTurn(gameCode, firstPlayer);
         }
 
         public void ServiceNotifyEndTurn(string gameCode, string currentGamertag) {
@@ -500,7 +500,7 @@ namespace GoatverseService {
 
                     currentTurnByGame[gameCode] = nextGametag;
                     turnTransitionState[gameCode] = true;
-                    NotifyClientOfTurn(gameCode, nextGametag);
+                    ServiceNotifyClientOfTurn(gameCode, nextGametag);
                 }
             }
         }
@@ -509,36 +509,21 @@ namespace GoatverseService {
             return currentTurnByGame.ContainsKey(gameCode) ? currentTurnByGame[gameCode] : null;
         }
 
-        public void NotifyEndGame(string matchId, string winnerUsername) {
-            Console.WriteLine($"El juego con ID: {matchId} ha terminado.");
-            Console.WriteLine($"El ganador es: {winnerUsername}");
-        }
-
-        public void UpdateCurrentTurn(string currentTurn) {
-            Console.WriteLine($"Es el turno de: {currentTurn}");
-        }
-
-        public void SyncTimer() {
-            Console.WriteLine("Sincronizando temporizador...");
-        }
-
-        private void NotifyClientOfTurn(string gameCode, string nextGametag) {
+        private void ServiceNotifyClientOfTurn(string gameCode, string nextGametag) {
             if(gameConnections.ContainsKey(gameCode)) {
                 var playersInGame = gameConnections[gameCode];
                 foreach(var player in playersInGame) {
                     IMatchServiceCallback callback = player.Value as IMatchServiceCallback;
                     if(callback != null) {
-                        callback.UpdateCurrentTurn(nextGametag); 
-                        callback.SyncTimer();  
+                        callback.ServiceUpdateCurrentTurn(nextGametag); 
+                        callback.ServiceSyncTimer();  
                     }
                 }
-                ResetTurnTransitionState(gameCode);
+                ServiceResetTurnTransitionState(gameCode);
             }
         }
 
-
-
-        private void ResetTurnTransitionState(string gameCode) {
+        private void ServiceResetTurnTransitionState(string gameCode) {
             if(turnTransitionState.ContainsKey(gameCode)) {
                 turnTransitionState[gameCode] = false;
             }
@@ -603,28 +588,6 @@ namespace GoatverseService {
 
             return matchDataList;
         }
-
-        /* Obtener perfiles en una partida
-        public List<ProfileData> ServiceGetProfilesInMatch(string matchId) {
-            if(!int.TryParse(matchId, out int id))
-                throw new ArgumentException("El ID de la partida debe ser un número.");
-
-            var profiles = MatchDAO.GetProfilesInMatch(id);
-
-            var profileDataList = new List<ProfileData>();
-            foreach(var profile in profiles) {
-                profileDataList.Add(new ProfileData {
-                    IdProfile = profile.idProfile.ToString(),
-                    ProfileLevel = profile.profileLevel,
-                    TotalPoints = profile.totalPoints,
-                    MatchesWon = profile.matchesWon,
-                    UserId = profile.idUser.ToString(),
-                    ImageId = profile.imageId
-                });
-            }
-
-            return profileDataList;
-        }*/
 
         // Obtener todas las cartas
         public List<CardData> ServiceGetCards() {

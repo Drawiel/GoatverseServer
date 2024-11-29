@@ -25,10 +25,10 @@ namespace GoatverseService {
         [OperationContract]
         List<CardData> ServiceGetCards();
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ServiceInitializeGameTurns(string gameCode, List<string> gamertags);
 
-        [OperationContract]
+        [OperationContract(IsOneWay = true)]
         void ServiceNotifyEndTurn(string gameCode, string currentGamertag);
 
         [OperationContract]
@@ -39,13 +39,13 @@ namespace GoatverseService {
     [ServiceContract]
     public interface IMatchServiceCallback {
         [OperationContract(IsOneWay = true)]
-        void NotifyEndGame(string matchId, string winnerUsername);
+        void ServiceNotifyEndGame(string matchId, string winnerUsername);
 
         [OperationContract(IsOneWay = true)]
-        void UpdateCurrentTurn(string currentTurn);
+        void ServiceUpdateCurrentTurn(string currentTurn);
 
         [OperationContract(IsOneWay = true)]
-        void SyncTimer();
+        void ServiceSyncTimer();
     }
 
     public class MatchData {
