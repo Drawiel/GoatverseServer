@@ -244,15 +244,26 @@ namespace GoatverseService {
 
                 foreach(var player in lobby.Keys) {
 
-                    int idUser = UsersDAO.GetIdUserByUsername(player);
-                    int profileLevel = ProfileDAO.GetProfileLevelByIdUser(idUser);
-                    int profileImageId = ProfileDAO.GetImageIdByIdUser(idUser);
+                    if (player.Contains("Guest")) {
 
-                    playerList.Add(new PlayerData {
-                        Username = player,
-                        Level = profileLevel,
-                        ImageId = profileImageId,
-                    });
+                        playerList.Add(new PlayerData {
+                            Username = player,
+                            Level = 0,
+                            ImageId = 0,
+                        });
+
+                    } else {
+
+                        int idUser = UsersDAO.GetIdUserByUsername(player);
+                        int profileLevel = ProfileDAO.GetProfileLevelByIdUser(idUser);
+                        int profileImageId = ProfileDAO.GetImageIdByIdUser(idUser);
+
+                        playerList.Add(new PlayerData {
+                            Username = player,
+                            Level = profileLevel,
+                            ImageId = profileImageId,
+                        });
+                    }
                 }
 
                 Task.Run(() => {
@@ -451,21 +462,23 @@ namespace GoatverseService {
             return result;
         }
 
-        public bool ServiceRemoveBlock(string usernameBlocker, string usernameBlocked) {
+        public bool ServiceRemoveBlock(string usernameBlocked, string usernameBlocker) {
             
             int idBlocker = UsersDAO.GetIdUserByUsername(usernameBlocker);
             int idBlocked = UsersDAO.GetIdUserByUsername(usernameBlocked);
 
-            int result = BlockedDAO.DeleteBlock(idBlocker, idBlocked);
+            int result = BlockedDAO.DeleteBlock(idBlocked, idBlocker);
             return result == 1;
         }
 
-        public bool ServiceBlockUser(string usernameBlocker, string usernameBlocked) {
+        public bool ServiceBlockUser(string usernameBlocked, string usernameBlocker) {
             
             int idBlocker = UsersDAO.GetIdUserByUsername(usernameBlocker);
             int idBlocked = UsersDAO.GetIdUserByUsername(usernameBlocked);
+            FriendsDAO.DeleteFriend(idBlocker, idBlocked);
+            FriendsDAO.DeleteFriend(idBlocked, idBlocker);
 
-            int result = BlockedDAO.BlockUser(idBlocker, idBlocked);
+            int result = BlockedDAO.BlockUser(idBlocked, idBlocker);
             return result == 1;
         }
 

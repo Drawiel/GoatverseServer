@@ -35,10 +35,10 @@ namespace GoatverseService {
         List<PlayerData> ServiceGetBlockedUsers(string username);
 
         [OperationContract]
-        bool ServiceRemoveBlock(string usernameBlocker, string usernameBlocked);
+        bool ServiceRemoveBlock(string usernameBlocked, string usernameBlocker);
 
         [OperationContract]
-        bool ServiceBlockUser(string usernameBlocker, string usernameBlocked);
+        bool ServiceBlockUser(string usernameBlocked, string usernameBlocker);
     }
 
     [DataContract]
