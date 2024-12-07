@@ -28,7 +28,7 @@ namespace GoatverseService {
         bool ServiceCreateLobby(string username, string lobbyCode);
 
         [OperationContract]
-        bool ServiceStartLobbyMatch(string lobbyCode);
+        bool ServiceStartLobbyMatch(string lobbyCode, string username);
     }
 
     [ServiceContract]
@@ -39,11 +39,15 @@ namespace GoatverseService {
 
         [OperationContract(IsOneWay = true)]
         void ServiceUpdatePlayersInLobby(List<PlayerData> players);
+
         [OperationContract(IsOneWay = true)]
         void ServiceStartMatch(List<PlayerData> players);
 
         [OperationContract(IsOneWay = true)]
         void ServiceNotifyMatchStart();
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceOwnerLeftLobby(string newOwner);
 
     }
 

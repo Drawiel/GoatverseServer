@@ -140,18 +140,19 @@ namespace GoatverseService {
     public partial class ServiceImplementation : ILobbyManager {
 
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>> lobbiesDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, ILobbyServiceCallback>>();
+        private static ConcurrentDictionary<string, string> lobbyOwnersDictionary = new ConcurrentDictionary<string, string>();
+
 
         public bool ServiceCreateLobby(string username, string lobbyCode) {
 
             if(lobbiesDictionary.ContainsKey(lobbyCode)) {
-                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
-
+                
                 return false;
-
             } else {
 
                 ConcurrentDictionary<string, ILobbyServiceCallback> lobby = new ConcurrentDictionary<string, ILobbyServiceCallback>();
                 lobbiesDictionary.TryAdd(lobbyCode, lobby);
+                lobbyOwnersDictionary.TryAdd(lobbyCode, username);
                 Console.WriteLine($"Usuario {username} ha creado el lobby {lobbyCode}");
                 return true;
             }
@@ -180,26 +181,46 @@ namespace GoatverseService {
         }
 
         public bool ServiceDisconnectFromLobby(string username, string lobbyCode) {
-            if(lobbiesDictionary.ContainsKey(lobbyCode)) {
-
-                ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
-                if(lobby.ContainsKey(username)) {
-
-                    lobby.TryRemove(username, out ILobbyServiceCallback callback);
+            if (lobbiesDictionary.TryGetValue(lobbyCode, out var lobby)) {
+                if (lobby.TryRemove(username, out _)) {
+                    if (lobbyOwnersDictionary.TryGetValue(lobbyCode, out var owner) && owner == username) {
+                        ReassignLobbyOwner(lobbyCode, lobby);
+                    }
 
                     if (lobby.IsEmpty) {
+                        lobbiesDictionary.TryRemove(lobbyCode, out _);
+                        lobbyOwnersDictionary.TryRemove(lobbyCode, out _);
 
-                        ConcurrentDictionary<string, ILobbyServiceCallback> removedUser;
-                        lobbiesDictionary.TryRemove(lobbyCode, out removedUser);
+                        Console.WriteLine($"Lobby {lobbyCode} eliminado porque quedó vacío.");
                     } else {
                         ServiceNotifyPlayersInLobby(lobbyCode);
                     }
 
+                    Console.WriteLine($"Usuario {username} salió del lobby {lobbyCode}");
                     return true;
                 }
             }
-
             return false;
+        }
+
+        private void ReassignLobbyOwner(string lobbyCode, ConcurrentDictionary<string, ILobbyServiceCallback> lobby) {
+            if (lobby.Keys.FirstOrDefault() is string newOwner) {
+                lobbyOwnersDictionary[lobbyCode] = newOwner;
+
+                Task.Run(() => {
+                    foreach (var callback in lobby.Values) {
+                        try {
+                            callback.ServiceOwnerLeftLobby(newOwner);
+                        } catch (Exception ex) {
+                            Console.WriteLine($"Error notificando cambio de propietario: {ex.Message}");
+                        }
+                    }
+                });
+
+                Console.WriteLine($"Nuevo propietario del lobby {lobbyCode}: {newOwner}");
+            } else {
+                Console.WriteLine($"Lobby {lobbyCode} quedó sin propietario y será eliminado.");
+            }
         }
 
         public void ServiceSendMessageToLobby(MessageData messageData) {
@@ -306,10 +327,15 @@ namespace GoatverseService {
             }
         }
 
-        public bool ServiceStartLobbyMatch(string lobbyCode) {
+        public bool ServiceStartLobbyMatch(string lobbyCode, string username) {
             if(lobbiesDictionary.ContainsKey(lobbyCode)) {
-                StartMatch(lobbyCode);
-                return true;
+                if (lobbyOwnersDictionary.TryGetValue(lobbyCode, out var owner) && owner == username) {
+                    StartMatch(lobbyCode);
+                    return true;
+                } else {
+                    Console.WriteLine($"Usuario {username} intentó iniciar la partida, pero no es el propietario del lobby {lobbyCode}.");
+                    return false;
+                }
             }
             return false;
         }
