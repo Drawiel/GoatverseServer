@@ -1,39 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace DataAccess.DAOs {
     public static class CardsDAO {
 
         public static List<Cards> GetAllCards() {
-            using(var database = new GoatverseEntities()) {
-                return database.Cards.ToList();
+            try {
+                using(var database = new GoatverseEntities()) {
+                    return database.Cards.ToList();
+                }
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL: {sqlEx.Message}");
+                return new List<Cards>();
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado: {ex.Message}");
+                return new List<Cards>();
             }
         }
 
         public static Cards GetCardById(int id) {
-            using(var database = new GoatverseEntities()) {
-                return database.Cards.SingleOrDefault(c => c.idCard == id);
+            try {
+                using(var database = new GoatverseEntities()) {
+                    return database.Cards.SingleOrDefault(c => c.idCard == id);
+                }
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL: {sqlEx.Message}");
+                return null;
+            } catch(InvalidOperationException invOpEx) {
+                Console.WriteLine($"Operación inválida: {invOpEx.Message}");
+                return null;
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado: {ex.Message}");
+                return null;
             }
         }
 
         public static int AddCard(Cards card) {
-            using(var database = new GoatverseEntities()) {
-                database.Cards.Add(card);
-                return database.SaveChanges();
+            try {
+                using(var database = new GoatverseEntities()) {
+                    database.Cards.Add(card);
+                    return database.SaveChanges();
+                }
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL: {sqlEx.Message}");
+                return -1;
+            } catch(InvalidOperationException invOpEx) {
+                Console.WriteLine($"Operación inválida: {invOpEx.Message}");
+                return -1;
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado: {ex.Message}");
+                return -1;
             }
         }
 
         public static int DeleteCard(int id) {
-            using(var database = new GoatverseEntities()) {
-                var card = database.Cards.SingleOrDefault(c => c.idCard == id);
-                if(card != null) {
-                    database.Cards.Remove(card);
-                    return database.SaveChanges();
+            try {
+                using(var database = new GoatverseEntities()) {
+                    var card = database.Cards.SingleOrDefault(c => c.idCard == id);
+                    if(card != null) {
+                        database.Cards.Remove(card);
+                        return database.SaveChanges();
+                    }
+                    return 0;
                 }
-                return 0; 
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL: {sqlEx.Message}");
+                return -1;
+            } catch(InvalidOperationException invOpEx) {
+                Console.WriteLine($"Operación inválida: {invOpEx.Message}");
+                return -1;
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado: {ex.Message}");
+                return -1;
             }
         }
     }
 }
-
