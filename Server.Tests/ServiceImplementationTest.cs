@@ -19,8 +19,8 @@ namespace Server.Tests {
             // Arrange
             var service = new ServiceImplementation();
             var user = new UserData {
-                Username = "Cuau",
-                Password = ""
+                Username = "Drawiel02",
+                Password = "Daniurix07!"
             };
 
             // Act
@@ -89,7 +89,7 @@ namespace Server.Tests {
         public void TestServiceUserExistsByUsernameTrue() {
             // Arrange
             var service = new ServiceImplementation();
-            string existingUsername = "test";
+            string existingUsername = "ZaidoSkate38";
 
             // Act
             bool result = service.ServiceUserExistsByUsername(existingUsername);
@@ -115,8 +115,8 @@ namespace Server.Tests {
         public void TestServiceVerifyPasswordValidPasswordTrue() {
             // Arrange
             var service = new ServiceImplementation();
-            string username = "Cuau";
-            string password = "";
+            string username = "Edgaritop";
+            string password = "Edgaritop1!";
 
             // Act
             bool result = service.ServiceVerifyPassword(password, username);

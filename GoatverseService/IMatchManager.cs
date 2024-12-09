@@ -22,17 +22,17 @@ namespace GoatverseService {
         [OperationContract]
         List<MatchData> ServiceGetRecentMatches(int topN);
 
-        [OperationContract]
-        List<CardData> ServiceGetCards();
-
         [OperationContract(IsOneWay = true)]
-        void ServiceInitializeGameTurns(string gameCode, List<string> gamertags);
+        void ServiceInitializeGameTurns(string gameCode);
 
         [OperationContract(IsOneWay = true)]
         void ServiceNotifyEndTurn(string gameCode, string currentGamertag);
 
         [OperationContract]
         string ServiceGetCurrentTurn(string gameCode);
+
+        [OperationContract]
+        bool ServiceConnectToGame(string username, string lobbyCode);
 
     }
 

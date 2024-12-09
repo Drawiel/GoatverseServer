@@ -515,32 +515,62 @@ namespace GoatverseService {
         private static Dictionary<string, List<string>> playersInGame = new Dictionary<string, List<string>>();
         private static Dictionary<string, string> currentTurnByGame = new Dictionary<string, string>();
         private static Dictionary<string, bool> turnTransitionState = new Dictionary<string, bool>();
-        private static Dictionary<string, Dictionary<string, IMatchServiceCallback>> gameConnections = new Dictionary<string, Dictionary<string, IMatchServiceCallback>>();
         private static Dictionary<string, string> currentTurnsByGame = new Dictionary<string, string>(); 
-        private static Dictionary<string, DateTime> gameTimers = new Dictionary<string, DateTime>();  
+        private static Dictionary<string, DateTime> gameTimers = new Dictionary<string, DateTime>();
+        private static ConcurrentDictionary<string, ConcurrentDictionary<string, IMatchServiceCallback>> gameConnectionsDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, IMatchServiceCallback>>();
+
+        public bool ServiceConnectToGame(string username, string lobbyCode) {
+            var callback = OperationContext.Current.GetCallbackChannel<IMatchServiceCallback>();
+            bool connected = false;
+            if (!gameConnectionsDictionary.ContainsKey(lobbyCode)) {
+                gameConnectionsDictionary[lobbyCode] = new ConcurrentDictionary<string, IMatchServiceCallback>();
+            }
+            gameConnectionsDictionary[lobbyCode][username] = callback;
+            connected = true;
+            return connected;
+        }
+        public void ServiceInitializeGameTurns(string lobbyCode) {
+            var callbackChannel = OperationContext.Current.GetCallbackChannel<IMatchServiceCallback>();
+            ConcurrentDictionary<string, ILobbyServiceCallback> lobby = lobbiesDictionary[lobbyCode];
+            ConcurrentDictionary<string, IMatchServiceCallback> connections = new ConcurrentDictionary<string, IMatchServiceCallback>();
+
+            List<string> usersInLobby = new List<string>();
+            if (lobbiesDictionary.ContainsKey(lobbyCode)) {
 
 
-        public void ServiceInitializeGameTurns(string gameCode, List<string> gamertags) {
-            playersInGame[gameCode] = gamertags.OrderBy(_ => Guid.NewGuid()).ToList();
-            var firstPlayer = playersInGame[gameCode].First();
-            currentTurnByGame[gameCode] = firstPlayer;
-            turnTransitionState[gameCode] = false;
-            ServiceNotifyClientOfTurn(gameCode, firstPlayer);
+                Console.WriteLine($"Usuarios actuales en el lobby {lobbyCode}:");
+                foreach (var users in lobby) {
+                    try {
+                        Console.WriteLine($"Usuario: {users.Key}");
+                        usersInLobby.Add(users.Key);
+
+                    } catch (Exception ex) {
+                        Console.WriteLine($"Error debido enviado a: {ex.Message}");
+                    }
+                }
+            }
+            playersInGame[lobbyCode] = usersInLobby.OrderBy(_ => Guid.NewGuid()).ToList();
+            var firstPlayer = playersInGame[lobbyCode].First();
+            currentTurnByGame[lobbyCode] = firstPlayer;
+            ServiceNotifyClientOfTurn(lobbyCode, firstPlayer);
         }
 
         public void ServiceNotifyEndTurn(string gameCode, string currentGamertag) {
-            if(turnTransitionState.ContainsKey(gameCode) && !turnTransitionState[gameCode]) {
-                if(playersInGame.ContainsKey(gameCode)) {
-                    var players = playersInGame[gameCode];
-                    int currentIndex = players.IndexOf(currentGamertag);
+            if (!turnTransitionState.ContainsKey(gameCode) || turnTransitionState[gameCode]) return;
 
-                    int nextIndex = (currentIndex + 1) % players.Count;
-                    var nextGametag = players[nextIndex];
+            if (playersInGame.TryGetValue(gameCode, out var players)) {
+                int currentIndex = players.IndexOf(currentGamertag);
 
-                    currentTurnByGame[gameCode] = nextGametag;
-                    turnTransitionState[gameCode] = true;
-                    ServiceNotifyClientOfTurn(gameCode, nextGametag);
-                }
+                int nextIndex = (currentIndex + 1) % players.Count;
+                var nextGametag = players[nextIndex];
+
+                currentTurnByGame[gameCode] = nextGametag;
+
+                ServiceNotifyClientOfTurn(gameCode, nextGametag);
+
+                turnTransitionState[gameCode] = true;
+
+                ServiceResetTurnTransitionState(gameCode);
             }
         }
 
@@ -549,14 +579,13 @@ namespace GoatverseService {
         }
 
         private void ServiceNotifyClientOfTurn(string gameCode, string nextGametag) {
-            if(gameConnections.ContainsKey(gameCode)) {
-                var playersInGame = gameConnections[gameCode];
-                foreach(var player in playersInGame) {
-                    IMatchServiceCallback callback = player.Value as IMatchServiceCallback;
-                    if(callback != null) {
-                        callback.ServiceUpdateCurrentTurn(nextGametag); 
-                        callback.ServiceSyncTimer();  
-                    }
+            ConcurrentDictionary<string, IMatchServiceCallback> connections = gameConnectionsDictionary[gameCode];
+            if(gameConnectionsDictionary.ContainsKey(gameCode)) {
+
+                foreach(var connection in connections.Values) {
+                    
+                    connection.ServiceUpdateCurrentTurn(nextGametag); 
+                    connection.ServiceSyncTimer();  
                 }
                 ServiceResetTurnTransitionState(gameCode);
             }
