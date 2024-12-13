@@ -34,6 +34,12 @@ namespace GoatverseService {
         [OperationContract]
         bool ServiceConnectToGame(string username, string lobbyCode);
 
+        [OperationContract(IsOneWay = true)]
+        void ServiceCreateDeck(string gameCode);
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceNotifyDrawCard(string lobbyCode);
+
     }
 
     [ServiceContract]
@@ -46,6 +52,12 @@ namespace GoatverseService {
 
         [OperationContract(IsOneWay = true)]
         void ServiceSyncTimer();
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceReceiveDeck(Stack<CardData> shuffledDeck);
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceRemoveCardFromDeck();
     }
 
     public class MatchData {

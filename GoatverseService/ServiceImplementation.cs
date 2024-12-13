@@ -549,15 +549,16 @@ namespace GoatverseService {
                     }
                 }
             }
+            
             playersInGame[lobbyCode] = usersInLobby.OrderBy(_ => Guid.NewGuid()).ToList();
             var firstPlayer = playersInGame[lobbyCode].First();
             currentTurnByGame[lobbyCode] = firstPlayer;
+            turnTransitionState[lobbyCode] = false;
             ServiceNotifyClientOfTurn(lobbyCode, firstPlayer);
         }
 
         public void ServiceNotifyEndTurn(string gameCode, string currentGamertag) {
             if (!turnTransitionState.ContainsKey(gameCode) || turnTransitionState[gameCode]) return;
-
             if (playersInGame.TryGetValue(gameCode, out var players)) {
                 int currentIndex = players.IndexOf(currentGamertag);
 
@@ -657,24 +658,50 @@ namespace GoatverseService {
             return matchDataList;
         }
 
-        // Obtener todas las cartas
-        public List<CardData> ServiceGetCards() {
-            var cards = CardsDAO.GetAllCards();
+        public void ServiceCreateDeck(string lobbyCode) {
+            List<CardData> deck = new List<CardData>();
+            AddCardsToDeck(deck, 1, 12);
+            AddCardsToDeck(deck, 2, 12);
+            AddCardsToDeck(deck, 3, 10);
+            AddCardsToDeck(deck, 4, 10);
+            AddCardsToDeck(deck, 5, 8);
+            AddCardsToDeck(deck, 6, 8);
+            AddCardsToDeck(deck, 7, 6);
+            AddCardsToDeck(deck, 8, 6);
+            AddCardsToDeck(deck, 9, 4);
+            AddCardsToDeck(deck, 10, 4);
+            AddCardsToDeck(deck, 11, 4);
+            AddCardsToDeck(deck, 12, 4);
 
-            var cardDataList = new List<CardData>();
-            foreach(var card in cards) {
-                cardDataList.Add(new CardData {
-                    IdCard = card.idCard, 
-                    CardName = card.cardName,
-                    Points = card.points ?? 0, 
-                    CardType = card.cardType,
-                    Description = card.description,
-                    EffectDescription = card.effectDescription,
-                    ImageCardId = card.imageCardId.HasValue ? card.imageCardId.Value : 0
-                });
+            List<CardData> deckShuffled = deck.OrderBy(newDeck => Guid.NewGuid()).ToList();
+            Stack<CardData> deckStacked = new Stack<CardData>(deckShuffled);
+
+            ConcurrentDictionary<string, IMatchServiceCallback> connections = gameConnectionsDictionary[lobbyCode];
+            if (gameConnectionsDictionary.ContainsKey(lobbyCode)) {
+                foreach (var connection in connections.Values) {
+                    connection.ServiceReceiveDeck(deckStacked);
+                }
             }
+        }
 
-            return cardDataList;
+        public void AddCardsToDeck(List<CardData> cardsList, int idCard, int cardQuantity) {
+
+            CardData cardData = ServiceGetCardById(idCard);
+            for (int i = 0; i < cardQuantity; i++) {
+                cardsList.Add(cardData);
+            }
+        }
+
+        public void ServiceNotifyDrawCard (string lobbyCode){
+            ConcurrentDictionary<string, IMatchServiceCallback> connections = gameConnectionsDictionary[lobbyCode];
+
+            if (gameConnectionsDictionary.ContainsKey(lobbyCode)) {
+                foreach(var connection in connections.Values) {
+                    connection.ServiceRemoveCardFromDeck();
+                }
+                ServiceResetTurnTransitionState(lobbyCode);
+
+            }
         }
 
     }
