@@ -1,5 +1,6 @@
 ﻿using DataAccess.DAOs;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.ServiceModel;
@@ -40,15 +41,21 @@ namespace GoatverseService {
         [OperationContract(IsOneWay = true)]
         void ServiceNotifyDrawCard(string lobbyCode);
 
+        [OperationContract(IsOneWay = true)]
+        void ServiceUpdatePointsFromPlayer(string lobbyCode, string username, int points);
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceEndGame(string lobbyCode);
+
     }
 
     [ServiceContract]
     public interface IMatchServiceCallback {
         [OperationContract(IsOneWay = true)]
-        void ServiceNotifyEndGame(string matchId, string winnerUsername);
+        void ServiceNotifyEndGame(string winnerUsername);
 
         [OperationContract(IsOneWay = true)]
-        void ServiceUpdateCurrentTurn(string currentTurn);
+        void ServiceUpdateCurrentTurn(string currentTurn, ConcurrentDictionary<string, int> playerPoints);
 
         [OperationContract(IsOneWay = true)]
         void ServiceSyncTimer();
