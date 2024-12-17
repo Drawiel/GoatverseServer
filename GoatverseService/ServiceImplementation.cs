@@ -733,6 +733,15 @@ namespace GoatverseService {
             return maxPair.Key;
         }
 
+        public void ServiceAttackPlayers(string lobbyCode, string usernameAttacker, int attackPoints) {
+            var playerPoints = pointsPerPlayer[lobbyCode];
+            foreach(var player in playerPoints) {
+                if(player.Key != usernameAttacker) {
+                    playerPoints[player.Key] = player.Value - attackPoints;
+                }
+            }
+        }
+
     }
 
     public partial class ServiceImplementation : ICardsManager {

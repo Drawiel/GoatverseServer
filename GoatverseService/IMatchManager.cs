@@ -47,6 +47,9 @@ namespace GoatverseService {
         [OperationContract(IsOneWay = true)]
         void ServiceEndGame(string lobbyCode);
 
+        [OperationContract(IsOneWay = true)]
+        void ServiceAttackPlayers(string lobbyCode, string usernameAttacker, int attackPoints);
+
     }
 
     [ServiceContract]
