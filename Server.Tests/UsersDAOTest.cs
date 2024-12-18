@@ -43,10 +43,12 @@ namespace DataAccess.Tests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void TestDeleteUserNonExisting() {
             // Act
-            UsersDAO.DeleteUser("NonExistingUser"); 
+            int result = UsersDAO.DeleteUser("NonExistingUser");
+
+            // Assert
+            Assert.AreEqual(-1, result);
         }
 
         [TestMethod]

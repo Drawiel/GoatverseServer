@@ -28,7 +28,6 @@ namespace DataAccess.Tests {
         }
 
         [TestMethod]
-        [ExpectedException(typeof(DbUpdateException))]
         public void TestAddFriendFailure() {
             // Arrange
             var user1 = CreateUserWithProfile("User1_FailAddFriend", "User1Password", "user1fail@example.com");
@@ -37,6 +36,7 @@ namespace DataAccess.Tests {
 
             // Act
             int result = FriendsDAO.AddFriend(idUser1, 9999);
+            Assert.AreEqual(-1, result);
 
             CleanupUserAndProfile(user1.username);
         }
