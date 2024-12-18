@@ -34,6 +34,26 @@ namespace DataAccess.Tests {
         }
 
         [TestMethod]
+        public void TestAddCardFailure() {
+            // Arrange
+            var newCard = new Cards {
+                cardName = "TestCard",
+            };
+
+            // Act
+            int result = CardsDAO.AddCard(newCard);
+
+            // Assert
+            Assert.AreEqual(-1, result);  
+
+            // Cleanup:
+            var cardToDelete = CardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
+            if (cardToDelete != null) {
+                CardsDAO.DeleteCard(cardToDelete.idCard);
+            }
+        }
+
+        [TestMethod]
         public void TestDeleteCard() {
             // Arrange
             var newCard = new Cards {
@@ -62,17 +82,25 @@ namespace DataAccess.Tests {
         }
 
         [TestMethod]
-        public void TestGetAllCards() {
+        public void TestGetAllCardsNotNull() {
             // Act
             var allCards = CardsDAO.GetAllCards();
 
             // Assert
-            Assert.IsNotNull(allCards);  // Asegurarse de que se obtiene una lista no nula
-            Assert.IsTrue(allCards.Count > 0);  // Asegurarse de que haya al menos una carta
+            Assert.IsNotNull(allCards); 
         }
 
         [TestMethod]
-        public void TestGetCardById() {
+        public void TestGetAllCardsExists() {
+            // Act
+            var allCards = CardsDAO.GetAllCards();
+
+            // Assert
+            Assert.IsTrue(allCards.Count > 0);
+        }
+
+        [TestMethod]
+        public void TestGetCardByIdNotNull() {
             // Arrange
             var newCard = new Cards {
                 cardName = "TestCard",
@@ -96,8 +124,35 @@ namespace DataAccess.Tests {
             }
 
             // Assert
-            Assert.IsNotNull(fetchedCard);  // Asegurarse de que se haya encontrado la carta
-            Assert.AreEqual(newCard.cardName, fetchedCard.cardName);  // Verificar que el nombre coincida
+            Assert.IsNotNull(fetchedCard);
+        }
+
+        [TestMethod]
+        public void TestGetCardById() {
+            // Arrange
+            var newCard = new Cards {
+                cardName = "TestCard",
+                points = 100,
+                cardType = "Attack",
+                imageCardId = 1,
+                description = "This is a test card.",
+                effectDescription = "No special effect"
+            };
+
+            // Agregar la carta antes de intentar obtenerla
+            CardsDAO.AddCard(newCard);
+
+            // Obtener el ID de la carta recién agregada
+            var cardToFetch = CardsDAO.GetAllCards().FirstOrDefault(c => c.cardName == "TestCard");
+
+            // Act
+            Cards fetchedCard = null;
+            if (cardToFetch != null) {
+                fetchedCard = CardsDAO.GetCardById(cardToFetch.idCard);
+            }
+
+            // Assert
+            Assert.AreEqual(newCard.cardName, fetchedCard.cardName);
         }
     }
 }
