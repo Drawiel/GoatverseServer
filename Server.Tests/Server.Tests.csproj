@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockedDAOTest.cs" />
+    <Compile Include="MatchDAOTest.cs" />
     <Compile Include="ServiceImplementationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProfileDAOTest.cs" />
