@@ -12,6 +12,8 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Data.SqlClient;
 
 namespace GoatverseService {
     public partial class ServiceImplementation : IUsersManager {
@@ -330,6 +332,9 @@ namespace GoatverseService {
             if(lobbiesDictionary.ContainsKey(lobbyCode)) {
                 if(lobbyOwnersDictionary.TryGetValue(lobbyCode, out var owner) && owner == username) {
                     StartMatch(lobbyCode);
+                    DateTime startTime = DateTime.Now;
+                    MatchDAO.CreateMatch(startTime);
+                    gameStartDates.Add(lobbyCode, startTime);
                     return true;
                 } else {
                     Console.WriteLine($"Usuario {username} intentó iniciar la partida, pero no es el propietario del lobby {lobbyCode}.");
@@ -355,6 +360,27 @@ namespace GoatverseService {
 
             return profileData;
         }
+
+        public void ServiceIncrementMatchesWonByUserName(string username) {
+            try {
+                ProfileDAO.IncrementMatchesWon(username);
+            } catch(Exception ex) {
+                Console.WriteLine($"Error al incrementar las partidas ganadas: {ex.Message}");
+                throw new FaultException("Error al incrementar las partidas ganadas.");
+            }
+        }
+
+        public int ServiceGetWonMatchesByUsername(string username) {
+            try {
+                int matchesWon = ProfileDAO.GetWonMatchesByUsername(username);
+
+                return matchesWon;
+            } catch(Exception ex) {
+                Console.WriteLine($"Error al obtener las partidas ganadas para el usuario {username}: {ex.Message}");
+                throw new FaultException("Error al obtener las partidas ganadas.");
+            }
+        }
+
 
         public bool ServiceChangeProfileImage(string username, int imageId) {
             int idUser = UsersDAO.GetIdUserByUsername(username);
@@ -518,6 +544,7 @@ namespace GoatverseService {
         private static Dictionary<string, DateTime> gameTimers = new Dictionary<string, DateTime>();
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, IMatchServiceCallback>> gameConnectionsDictionary = new ConcurrentDictionary<string, ConcurrentDictionary<string, IMatchServiceCallback>>();
         private static ConcurrentDictionary<string, ConcurrentDictionary<string, int>> pointsPerPlayer = new ConcurrentDictionary<string, ConcurrentDictionary<string, int>>();
+        private static Dictionary<string, DateTime> gameStartDates = new Dictionary<string, DateTime>();
 
         public bool ServiceConnectToGame(string username, string lobbyCode) {
             var callback = OperationContext.Current.GetCallbackChannel<IMatchServiceCallback>();
@@ -669,12 +696,12 @@ namespace GoatverseService {
 
         public void ServiceCreateDeck(string lobbyCode) {
             List<CardData> deck = new List<CardData>();
-            //AddCardsToDeck(deck, 1, 12);
-            //AddCardsToDeck(deck, 2, 12);
-            //AddCardsToDeck(deck, 3, 10);
-            //AddCardsToDeck(deck, 4, 10);
-            //AddCardsToDeck(deck, 5, 8);
-            //AddCardsToDeck(deck, 6, 8);
+            AddCardsToDeck(deck, 1, 12);
+            AddCardsToDeck(deck, 2, 12);
+            AddCardsToDeck(deck, 3, 10);
+            AddCardsToDeck(deck, 4, 10);
+            AddCardsToDeck(deck, 5, 8);
+            AddCardsToDeck(deck, 6, 8);
             AddCardsToDeck(deck, 7, 6);
             AddCardsToDeck(deck, 8, 6);
             AddCardsToDeck(deck, 9, 4);
@@ -719,6 +746,21 @@ namespace GoatverseService {
         public void ServiceEndGame(string lobbyCode) {
             string winnerUsername = CheckWinner(lobbyCode);
             ConcurrentDictionary<string, IMatchServiceCallback> connections = gameConnectionsDictionary[lobbyCode];
+            int idUser = 0;
+            if(winnerUsername.Contains("Guest")) {
+                idUser = 0;
+            } else {
+                idUser = UsersDAO.GetIdUserByUsername(winnerUsername);
+                try {
+                    ProfileDAO.IncrementMatchesWon(winnerUsername);
+                } catch(Exception ex) {
+                    Console.WriteLine($"Error al incrementar las partidas ganadas para el usuario {idUser}: {ex.Message}");
+                }
+            }
+            DateTime startTime = gameStartDates[lobbyCode];
+            var match = MatchDAO.GetMatchByStartTime(startTime);
+            DateTime endTime = DateTime.Now;
+            MatchDAO.UpdateMatch(match, idUser, endTime);
             Task.Run(() => {
                 if(gameConnectionsDictionary.ContainsKey(lobbyCode)) {
                     foreach(var connection in connections.Values) {
@@ -749,7 +791,6 @@ namespace GoatverseService {
         public List<CardData> ServiceGetAllCards() {
             var cards = CardsDAO.GetAllCards();
 
-            // Convertimos las entidades a un formato más amigable para el cliente
             var cardDataList = new List<CardData>();
             foreach(var card in cards) {
                 cardDataList.Add(new CardData {

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using static GoatverseService.ServiceImplementation;
 
 namespace GoatverseService {
+
     [ServiceContract]
     public interface IProfilesManager {
         [OperationContract]
@@ -18,6 +19,12 @@ namespace GoatverseService {
 
         [OperationContract]
         ProfileData ServiceGetProfileByUserId(string userId);
+
+        [OperationContract]
+        void ServiceIncrementMatchesWonByUserName(string username);
+
+        [OperationContract]
+        int ServiceGetWonMatchesByUsername(string username);
 
     }
 

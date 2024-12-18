@@ -89,6 +89,54 @@ namespace DataAccess.DAOs {
             }
         }
 
+        public static void IncrementMatchesWon(string username) {
+            try {
+                using(var database = new GoatverseEntities()) {
+                    var user = database.Users.FirstOrDefault(u => u.username == username);
+
+                    if(user != null) {
+                        var userProfile = database.Profile.FirstOrDefault(p => p.idUser == user.idUser);
+
+                        if(userProfile != null) {
+                            userProfile.matchesWon += 1;
+
+
+                            database.SaveChanges();
+                        } else {
+                            Console.WriteLine($"No se encontró el perfil para el usuario con username: {username}");
+                        }
+                    } else {
+                        Console.WriteLine($"No se encontró un usuario con el username: {username}");
+                    }
+                }
+            } catch(Exception ex) {
+
+                Console.WriteLine($"Error al incrementar las partidas ganadas para el usuario {username}: {ex.Message}");
+            }
+        }
+
+        public static int GetWonMatchesByUsername(string username) {
+            try {
+                using(var database = new GoatverseEntities()) {
+                    var user = database.Users.FirstOrDefault(u => u.username == username);
+
+                    if(user != null) {
+                        var userProfile = database.Profile.FirstOrDefault(p => p.idUser == user.idUser);
+
+                        if(userProfile != null) {
+                            return userProfile.matchesWon ?? 0;
+                        }
+                    }
+
+                    return 0;
+                }
+            } catch(Exception ex) {
+                Console.WriteLine($"Error al obtener el número de partidas ganadas para el usuario {username}: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public static int GetImageIdByIdUser(int idUser) {
             try {
                 using(var database = new GoatverseEntities()) {

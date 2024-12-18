@@ -5,21 +5,24 @@ using System.Linq;
 
 namespace DataAccess.DAOs {
     public static class MatchDAO {
-        // Crear una nueva partida
         public static int CreateMatch(DateTime startTime) {
+
             try {
                 using(var database = new GoatverseEntities()) {
+                    if(startTime == null) {
+                        throw new ArgumentException("startTime no puede ser null.");
+                    }
                     var newMatch = new Matches {
                         startTime = startTime,
-                        endTime = null,
-                        idWinner = null
                     };
 
                     database.Matches.Add(newMatch);
-                    database.SaveChanges();
+                    int result = database.SaveChanges();
 
-                    return newMatch.idMatch;
+                    Console.WriteLine($"El resultado de la operación fue: {result}");
+                    return result;
                 }
+
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
                 return -1;
@@ -28,6 +31,27 @@ namespace DataAccess.DAOs {
                 return -1;
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
+                if(ex.InnerException != null) {
+                    Console.WriteLine($"Detalle de la excepción interna: {ex.InnerException.Message}");
+                    Console.WriteLine($"StackTrace: {ex.InnerException.StackTrace}");
+                }
+                return -1;
+            }
+        }
+
+        public static int GetMatchByStartTime(DateTime startTime) {
+            try {
+                using(var database = new GoatverseEntities()) {
+                    return database.Matches.Where(m => m.startTime == startTime).Select(m => m.idMatch).FirstOrDefault();
+                }
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL al buscar partida por hora de inicio: {sqlEx.Message}");
+                return -1;
+            } catch(InvalidOperationException invOpEx) {
+                Console.WriteLine($"Operación inválida al buscar partida por hora de inicio: {invOpEx.Message}");
+                return -1;
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado al buscar partida por hora de inicio: {ex.Message}");
                 return -1;
             }
         }
@@ -37,14 +61,14 @@ namespace DataAccess.DAOs {
                 using(var database = new GoatverseEntities()) {
                     return database.Matches.FirstOrDefault(m => m.idMatch == idMatch);
                 }
-            } catch (SqlException sqlEx) {
-                Console.WriteLine($"Error SQL: {sqlEx.Message}");
+            } catch(SqlException sqlEx) {
+                Console.WriteLine($"Error SQL al buscar partida por ID: {sqlEx.Message}");
                 return null;
-            } catch (InvalidOperationException invOpEx) {
-                Console.WriteLine($"Operación inválida: {invOpEx.Message}");
+            } catch(InvalidOperationException invOpEx) {
+                Console.WriteLine($"Operación inválida al buscar partida por ID: {invOpEx.Message}");
                 return null;
-            } catch (Exception ex) {
-                Console.WriteLine($"Error inesperado: {ex.Message}");
+            } catch(Exception ex) {
+                Console.WriteLine($"Error inesperado al buscar partida por ID: {ex.Message}");
                 return null;
             }
         }
@@ -95,14 +119,6 @@ namespace DataAccess.DAOs {
             }
         }
 
-        /* Obtener los perfiles de los jugadores en una partida
-        public static List<Profile> GetProfilesInMatch(int matchId) {
-            using(var database = new GoatverseEntities()) {
-                return database.Profile
-                               .Where(p => p.IdMatch == matchId) 
-                               .ToList();  
-            }
-        }*/
     }
 }
 
