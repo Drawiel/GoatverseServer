@@ -38,7 +38,7 @@
           <Key>
             <PropertyRef Name="idMatch" />
           </Key>
-          <Property Name="idMatch" Type="int" Nullable="false" />
+          <Property Name="idMatch" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="startTime" Type="datetime" />
           <Property Name="endTime" Type="datetime" />
           <Property Name="idWinner" Type="int" />
