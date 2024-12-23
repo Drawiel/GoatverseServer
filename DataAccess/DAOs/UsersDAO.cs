@@ -138,13 +138,13 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
-                return null;
+                return "DatabaseError";
             } catch (InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida: {invOpEx.Message}");
-                return null;
+                return "DatabaseError";
             } catch (Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
-                return null;
+                return "DatabaseError";
             }
         }
 
@@ -156,13 +156,13 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
-                return null;
-            } catch(InvalidOperationException invOpEx) {
+                return "DatabaseError";
+            } catch (InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida: {invOpEx.Message}");
-                return null;
+                return "DatabaseError";
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
-                return null;
+                return "DatabaseError";
             }
         }
     }

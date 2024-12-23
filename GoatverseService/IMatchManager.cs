@@ -68,6 +68,9 @@ namespace GoatverseService {
 
         [OperationContract(IsOneWay = true)]
         void ServiceRemoveCardFromDeck();
+
+        [OperationContract(IsOneWay = true)]
+        void ServiceNotifyReturnToStart();
     }
 
     public class MatchData {

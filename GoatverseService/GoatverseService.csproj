@@ -80,6 +80,7 @@
     <Compile Include="ILobbyManager.cs" />
     <Compile Include="IMatchManager.cs" />
     <Compile Include="IProfilesManager.cs" />
+    <Compile Include="ServiceExceptionHandler.cs" />
     <Compile Include="ServiceImplementation.cs" />
     <Compile Include="IUsersManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

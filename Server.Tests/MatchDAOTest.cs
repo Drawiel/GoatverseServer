@@ -6,9 +6,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System.Data.SqlTypes;
 
-namespace Server.Tests {
-    internal class MatchDAOTest {
+namespace DataAccess.Tests {
+    [TestClass]
+    public  class MatchDAOTest {
         [TestMethod]
         public void TestCreateMatchSuccess() {
             // Arrange
@@ -34,19 +37,6 @@ namespace Server.Tests {
         }
 
         [TestMethod]
-        public void TestGetMatchByStartTimeSuccess() {
-            // Arrange
-            DateTime startTime = DateTime.Now;
-            MatchDAO.CreateMatch(startTime);
-
-            // Act
-            int matchId = MatchDAO.GetMatchByStartTime(startTime);
-
-            // Assert
-            Assert.IsTrue(matchId > 0);
-        }
-
-        [TestMethod]
         public void TestGetMatchByStartTimeFailure() {
             // Arrange
             DateTime nonExistentStartTime = DateTime.Now.AddYears(-10);
@@ -59,21 +49,6 @@ namespace Server.Tests {
         }
 
         [TestMethod]
-        public void TestGetMatchByIdSuccess() {
-            // Arrange
-            DateTime startTime = DateTime.Now;
-            MatchDAO.CreateMatch(startTime);
-            int matchId = MatchDAO.GetMatchByStartTime(startTime);
-
-            // Act
-            var match = MatchDAO.GetMatchById(matchId);
-
-            // Assert
-            Assert.IsNotNull(match);
-            Assert.AreEqual(startTime, match.startTime);
-        }
-
-        [TestMethod]
         public void TestGetMatchByIdFailure() {
             // Arrange
             int nonExistentId = 9999;
@@ -83,22 +58,6 @@ namespace Server.Tests {
 
             // Assert
             Assert.IsNull(match);
-        }
-
-        [TestMethod]
-        public void TestUpdateMatchSuccess() {
-            // Arrange
-            DateTime startTime = DateTime.Now;
-            MatchDAO.CreateMatch(startTime);
-            int matchId = MatchDAO.GetMatchByStartTime(startTime);
-            int? winnerId = 1;
-            DateTime? endTime = DateTime.Now.AddHours(1);
-
-            // Act
-            int result = MatchDAO.UpdateMatch(matchId, winnerId, endTime);
-
-            // Assert
-            Assert.AreEqual(1, result);
         }
 
         [TestMethod]

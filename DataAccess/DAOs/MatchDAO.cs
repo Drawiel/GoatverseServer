@@ -63,13 +63,16 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL al buscar partida por ID: {sqlEx.Message}");
-                return null;
+                Matches matches = new Matches() { idMatch = -1 };
+                return matches;
             } catch(InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida al buscar partida por ID: {invOpEx.Message}");
-                return null;
+                Matches matches = new Matches() { idMatch = -1 };
+                return matches;
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado al buscar partida por ID: {ex.Message}");
-                return null;
+                Matches matches = new Matches() { idMatch = -1 };
+                return matches;
             }
         }
 
@@ -109,13 +112,16 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
-                return null;
+                List<Matches> matches = new List<Matches>();
+                return matches;
             } catch(InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida: {invOpEx.Message}");
-                return null;
+                List<Matches> matches = new List<Matches>();
+                return matches;
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
-                return null;
+                List<Matches> matches = new List<Matches>();
+                return matches;
             }
         }
 

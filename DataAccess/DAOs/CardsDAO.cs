@@ -27,13 +27,16 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
-                return null;
+                Cards cards = new Cards() { idCard = -1};
+                return cards;
             } catch(InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida: {invOpEx.Message}");
-                return null;
+                Cards cards = new Cards() { idCard = -1 };
+                return cards;
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
-                return null;
+                Cards cards = new Cards() { idCard = -1 };
+                return cards;
             }
         }
 

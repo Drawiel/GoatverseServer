@@ -132,7 +132,7 @@ namespace DataAccess.DAOs {
                 }
             } catch(Exception ex) {
                 Console.WriteLine($"Error al obtener el número de partidas ganadas para el usuario {username}: {ex.Message}");
-                throw;
+                return -1;
             }
         }
 
@@ -217,13 +217,16 @@ namespace DataAccess.DAOs {
                 }
             } catch(SqlException sqlEx) {
                 Console.WriteLine($"Error SQL: {sqlEx.Message}");
-                return null;
+                Profile profile = new Profile() { idProfile = -1};
+                return profile;
             } catch(InvalidOperationException invOpEx) {
                 Console.WriteLine($"Operación inválida: {invOpEx.Message}");
-                return null;
+                Profile profile = new Profile() { idProfile = -1 };
+                return profile;
             } catch(Exception ex) {
                 Console.WriteLine($"Error inesperado: {ex.Message}");
-                return null;
+                Profile profile = new Profile() { idProfile = -1 };
+                return profile;
             }
         }
 
